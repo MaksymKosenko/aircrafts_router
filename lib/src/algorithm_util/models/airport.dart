@@ -22,8 +22,13 @@ class Airport {
   int currentAircraftAmount = 0;
 }
 
+///Represent x and y position on scale.
+///Where top left position is (0;0)
+///And bottom right position is (10;10)
 class AirportPosition {
-  const AirportPosition(this.x, this.y);
+  const AirportPosition(this.x, this.y)
+      : assert(x >= 0 && x <= 10),
+        assert(y >= 0 && y <= 10);
 
   final int x;
   final int y;
