@@ -1,4 +1,4 @@
-import 'package:aircrafts_router/src/algorithm_util/models/route.dart';
+import 'package:aircrafts_router/src/algorithm_util/models/aircraft_route.dart';
 
 class Aircraft {
   Aircraft({

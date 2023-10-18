@@ -1,3 +1,8 @@
+import 'package:aircrafts_router/src/algorithm_util/models/airport.dart';
+
+import 'models/aircraft.dart';
+import 'models/aircraft_route.dart';
+
 class AlgorithmUtil {
   AlgorithmUtil._privateConstructor();
 
@@ -7,11 +12,23 @@ class AlgorithmUtil {
     return _instance;
   }
 
-  void generateRoutesScheme() {
-    //TODO implement setting data into RoutesBloc
-    //SendDataTo RoutesBloc
+  late Map<AircraftRoute, Aircraft> _generatedRoutes;
 
-    //TODO implement setting data into ResourceTrackerBloc
-    //SendDataTo ResourceTrackerBloc
+  Map<AircraftRoute, Aircraft> get generatedRoutes => _generatedRoutes;
+
+  set generatedRoutes(Map<AircraftRoute, Aircraft> generatedRoutes) {
+    _generatedRoutes = generatedRoutes;
+  }
+
+  void generateRoutesScheme(List<Airport> airports, List<AircraftRoute> routes,
+      List<Aircraft> planes) {
+    //TODO: implement some routes calculation
+    //As for now, data is hardcoded
+    generatedRoutes = <AircraftRoute, Aircraft>{
+      routes[1]: planes[0],
+      routes[2]: planes[0],
+      routes[0]: planes[1],
+      routes[3]: planes[1],
+    };
   }
 }
