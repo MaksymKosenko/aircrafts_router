@@ -31,4 +31,9 @@ class AlgorithmUtil {
       routes[3]: planes[1],
     };
   }
+
+  void updateGeneratedRoutesScheme(
+    List<AircraftRoute> currentRoutes,
+    List<Aircraft> activePlanes,
+  ) {}
 }
