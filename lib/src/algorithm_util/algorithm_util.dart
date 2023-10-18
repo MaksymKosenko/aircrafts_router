@@ -1,6 +1,13 @@
-class AlgorithmUtil{
+class AlgorithmUtil {
+  AlgorithmUtil._privateConstructor();
 
-  void generateRoutesScheme(){
+  static final AlgorithmUtil _instance = AlgorithmUtil._privateConstructor();
+
+  factory AlgorithmUtil() {
+    return _instance;
+  }
+
+  void generateRoutesScheme() {
     //TODO implement setting data into RoutesBloc
     //SendDataTo RoutesBloc
 
