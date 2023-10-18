@@ -10,7 +10,7 @@ class Airport {
   final String name;
 
   ///Airport position on a flat surface (x, y)
-  AirportPosition airportPosition;
+  final AirportPosition airportPosition;
 
   ///Fuel amount in liters
   double fuelAmount;
