@@ -9,7 +9,7 @@ class Aircraft {
     required this.transportSpaceAmount,
     required this.aircraftCost,
     required this.transportationResourceCost,
-  });
+  }) : maxFuelAmount = fuelAmount;
 
   ///Aircraft name
   final String name;
@@ -27,7 +27,10 @@ class Aircraft {
   ///Aircraft technical state, used to calculate risks
   AircraftTechnicalState aircraftTechnicalState;
 
-  ///Fuel amount in liters
+  ///Maximal fuel amount in liters
+  final double maxFuelAmount;
+
+  ///Current fuel amount in liters
   double fuelAmount;
 
   ///Space available for transportation of luggage or people

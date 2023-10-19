@@ -8,7 +8,7 @@ import '../algorithm_util/models/aircraft_route.dart';
 class ResourceTrackerBloc {
   static const double planePositionMoveDistance = 0.5;
   static const double fuelPerOneTick = 0.1;
-  static const double lowerLimitOfFuel = 4;
+  static const double lowerLimitOfFuel = 8;
 
   void changeAirportResources(Airport airport, Aircraft aircraft) {
     if (aircraft.currentPosition == 1) {
@@ -74,10 +74,9 @@ class ResourceTrackerBloc {
           if (route == aircraft.aircraftRoutes.first) {
             changeAirportResources(route.endPoint, aircraft);
           }
-          if (aircraft.fuelAmount <= 4) {
-            //TODO remove hardcoded 16l fuel amount
-            route.endPoint.fuelAmount -= (16 - aircraft.fuelAmount);
-            aircraft.fuelAmount += (16 - aircraft.fuelAmount);
+          if (aircraft.fuelAmount <= lowerLimitOfFuel) {
+            route.endPoint.fuelAmount -= (aircraft.maxFuelAmount - aircraft.fuelAmount);
+            aircraft.fuelAmount += (aircraft.maxFuelAmount - aircraft.fuelAmount);
           }
         });
       }
