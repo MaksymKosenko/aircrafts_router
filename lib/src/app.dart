@@ -1,20 +1,120 @@
+import 'package:aircrafts_router/src/bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'sample_feature/sample_item_details_view.dart';
-import 'sample_feature/sample_item_list_view.dart';
+import 'algorithm_util/models/aircraft.dart';
+import 'algorithm_util/models/airport.dart';
+import 'algorithm_util/models/aircraft_route.dart';
+import 'bloc/core_data_bloc.dart';
+import 'features/sample_feature/sample_item_details_view.dart';
+import 'features/sample_feature/sample_item_list_view.dart';
+
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
-  const MyApp({
+  MyApp({
     Key? key,
     required this.settingsController,
   }) : super(key: key);
 
   final SettingsController settingsController;
+
+  final List<Airport> airports = [
+    Airport(
+        name: "A",
+        airportPosition: const AirportPosition(3, 1),
+        fuelAmount: 40,
+        totalAircraftAmount: 3),
+    Airport(
+        name: "B",
+        airportPosition: const AirportPosition(10, 6), //10; 6
+        fuelAmount: 40,
+        totalAircraftAmount: 3),
+    Airport(
+        name: "C",
+        airportPosition: const AirportPosition(1, 7),
+        fuelAmount: 40,
+        totalAircraftAmount: 3),
+    Airport(
+        name: "D",
+        airportPosition: const AirportPosition(5, 5),
+        fuelAmount: 40,
+        totalAircraftAmount: 3),
+    Airport(
+        name: "E",
+        airportPosition: const AirportPosition(6, 2), //6; 2
+        fuelAmount: 40,
+        totalAircraftAmount: 3),
+  ];
+
+  late final List<AircraftRoute> routes;
+  late final List<Aircraft> aircrafts;
+
+  @override
+  void initState() {
+    routes = [
+      AircraftRoute(
+        name: 'Route1',
+        startPoint: airports[0],
+        endPoint: airports[2],
+        routeProfit: 100,
+        routePriority: RoutePriority.low,
+      ),
+      AircraftRoute(
+        name: 'Route2',
+        startPoint: airports[1],
+        //1 = b
+        endPoint: airports[4],
+        //4 = e
+        routeProfit: 130,
+        routePriority: RoutePriority.mid,
+      ),
+      AircraftRoute(
+        name: 'Route3',
+        startPoint: airports[4],
+        endPoint: airports[1],
+        routeProfit: 230,
+        routePriority: RoutePriority.high,
+      ),
+      AircraftRoute(
+        name: 'Route3',
+        startPoint: airports[2],
+        endPoint: airports[1],
+        routeProfit: 200,
+        routePriority: RoutePriority.mid,
+      ),
+    ];
+
+    aircrafts = [
+      Aircraft(
+        name: 'Aircraft1',
+        aircraftRoutes: [
+          routes[1],
+          routes[2],
+        ],
+        aircraftTechnicalState: AircraftTechnicalState.excellent,
+        fuelAmount: 21,
+        transportSpaceAmount: 50,
+        aircraftCost: 12345,
+        transportationResourceCost: 32,
+      ),
+      Aircraft(
+        name: 'Aircraft2',
+        aircraftRoutes: [
+          routes[0],
+          routes[3],
+        ],
+        aircraftTechnicalState: AircraftTechnicalState.good,
+        fuelAmount: 16,
+        transportSpaceAmount: 45,
+        aircraftCost: 12344,
+        transportationResourceCost: 90,
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +173,10 @@ class MyApp extends StatelessWidget {
                     return const SampleItemDetailsView();
                   case SampleItemListView.routeName:
                   default:
-                    return const SampleItemListView();
+                    return BlocProvider<CoreDataBloc>(
+                        builder: (_) =>
+                            CoreDataBloc(airports, routes, aircrafts),
+                        child: SampleItemListView());
                 }
               },
             );
