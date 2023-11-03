@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class Airport {
   Airport({
     required this.name,
@@ -26,10 +28,14 @@ class Airport {
 ///Where top left position is (0;0)
 ///And bottom right position is (10;10)
 class AirportPosition {
-  const AirportPosition(this.x, this.y)
-      : assert(x >= 0 && x <= 10),
-        assert(y >= 0 && y <= 10);
+  final int _x;
+  final int _y;
 
-  final int x;
-  final int y;
+  const AirportPosition(int x, int y)
+      : assert(x >= 0 && x <= 10),
+        assert(y >= 0 && y <= 10),
+        _x = x,
+        _y = y;
+
+  Offset get position => Offset(_x.toDouble(), _y.toDouble()) * 50;
 }
