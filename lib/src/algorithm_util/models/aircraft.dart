@@ -9,7 +9,8 @@ class Aircraft {
     required this.transportSpaceAmount,
     required this.aircraftCost,
     required this.transportationResourceCost,
-  }) : maxFuelAmount = fuelAmount;
+  })  : maxFuelAmount = fuelAmount,
+        flightState = AircraftFlightState.notStarted;
 
   ///Aircraft name
   final String name;
@@ -27,6 +28,8 @@ class Aircraft {
   ///Aircraft technical state, used to calculate risks
   AircraftTechnicalState aircraftTechnicalState;
 
+  AircraftFlightState flightState;
+
   ///Maximal fuel amount in liters
   final double maxFuelAmount;
 
@@ -41,6 +44,12 @@ class Aircraft {
 
   ///Cost of the luggage or people
   int transportationResourceCost;
+}
+
+enum AircraftFlightState {
+  notStarted,
+  flying,
+  completed,
 }
 
 enum AircraftTechnicalState {
