@@ -6,142 +6,106 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'algorithm_util/models/aircraft.dart';
 import 'algorithm_util/models/airport.dart';
 import 'algorithm_util/models/aircraft_route.dart';
+import 'bloc/aircraft_flight_simulation_cubit/aircraft_flight_simulation_cubit.dart';
 import 'bloc/core_data_cubit/core_data_cubit.dart';
 import 'features/sample_feature/sample_item_details_view.dart';
 import 'features/sample_feature/sample_item_list_view.dart';
-
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
-  MyApp({
-    Key? key,
-    required this.settingsController,
-  }) : super(key: key);
+  MyApp({Key? key, required this.settingsController}) : super(key: key);
 
   final SettingsController settingsController;
 
   final List<Airport> airports = [
     Airport(
-        name: "A",
-        airportPosition: const AirportPosition(3, 1),
-        fuelAmount: 40,
-        totalAircraftAmount: 3),
+      name: "A",
+      airportPosition: const AirportPosition(4, 10),
+      fuelAmount: 40,
+      totalAircraftAmount: 3,
+    ),
     Airport(
-        name: "B",
-        airportPosition: const AirportPosition(10, 6), //10; 6
-        fuelAmount: 40,
-        totalAircraftAmount: 3),
+      name: "B",
+      airportPosition: const AirportPosition(10, 0),
+      fuelAmount: 40,
+      totalAircraftAmount: 3,
+    ),
     Airport(
-        name: "C",
-        airportPosition: const AirportPosition(1, 7),
-        fuelAmount: 40,
-        totalAircraftAmount: 3),
+      name: "D",
+      airportPosition: const AirportPosition(0, 0),
+      fuelAmount: 40,
+      totalAircraftAmount: 3,
+    ),
     Airport(
-        name: "D",
-        airportPosition: const AirportPosition(5, 5),
-        fuelAmount: 40,
-        totalAircraftAmount: 3),
+      name: "E",
+      airportPosition: const AirportPosition(0, 3),
+      fuelAmount: 40,
+      totalAircraftAmount: 3,
+    ),
     Airport(
-        name: "E",
-        airportPosition: const AirportPosition(6, 2), //6; 2
-        fuelAmount: 40,
-        totalAircraftAmount: 3),
+      name: "C",
+      airportPosition: const AirportPosition(5, 5),
+      fuelAmount: 40,
+      totalAircraftAmount: 3,
+    ),
   ];
 
-  final List<AircraftRoute> routes = [
-    AircraftRoute(
-      name: "Route 1",
-      startPoint: Airport(
-        name: "Airport A",
-        airportPosition: AirportPosition(1, 2),
-        fuelAmount: 5000.0,
-        totalAircraftAmount: 10,
-      ),
-      endPoint: Airport(
-        name: "Airport B",
-        airportPosition: AirportPosition(5, 8),
-        fuelAmount: 6000.0,
-        totalAircraftAmount: 12,
-      ),
-      routeProfit: 10000,
-      routePriority: RoutePriority.high,
-    ),
-    AircraftRoute(
-      name: "Route 2",
-      startPoint: Airport(
-        name: "Airport C",
-        airportPosition: AirportPosition(2, 3),
-        fuelAmount: 5500.0,
-        totalAircraftAmount: 8,
-      ),
-      endPoint: Airport(
-        name: "Airport D",
-        airportPosition: AirportPosition(6, 9),
-        fuelAmount: 7000.0,
-        totalAircraftAmount: 14,
-      ),
-      routeProfit: 12000,
-      routePriority: RoutePriority.critical,
-    ),
-  ];
-  final List<Aircraft> aircrafts = [
-    Aircraft(
-      name: "Boeing 747",
-      aircraftRoutes: [
+  List<AircraftRoute> get routes => [
         AircraftRoute(
           name: "Route 1",
-          startPoint: Airport(
-            name: "Airport A",
-            airportPosition: AirportPosition(1, 2),
-            fuelAmount: 5000.0,
-            totalAircraftAmount: 10,
-          ),
-          endPoint: Airport(
-            name: "Airport B",
-            airportPosition: AirportPosition(5, 8),
-            fuelAmount: 6000.0,
-            totalAircraftAmount: 12,
-          ),
+          startPoint: airports[0],
+          endPoint: airports[1],
           routeProfit: 10000,
           routePriority: RoutePriority.high,
         ),
-      ],
-      aircraftTechnicalState: AircraftTechnicalState.good,
-      fuelAmount: 5000.0,
-      transportSpaceAmount: 300,
-      aircraftCost: 100000000,
-      transportationResourceCost: 1000,
-    ),
-    Aircraft(
-      name: "Airbus A380",
-      aircraftRoutes: [
         AircraftRoute(
           name: "Route 2",
-          startPoint: Airport(
-            name: "Airport C",
-            airportPosition: AirportPosition(2, 3),
-            fuelAmount: 5500.0,
-            totalAircraftAmount: 8,
-          ),
-          endPoint: Airport(
-            name: "Airport D",
-            airportPosition: AirportPosition(6, 9),
-            fuelAmount: 7000.0,
-            totalAircraftAmount: 14,
-          ),
+          startPoint: airports[2],
+          endPoint: airports[3],
           routeProfit: 12000,
           routePriority: RoutePriority.critical,
         ),
-      ],
-      aircraftTechnicalState: AircraftTechnicalState.excellent,
-      fuelAmount: 6000.0,
-      transportSpaceAmount: 350,
-      aircraftCost: 120000000,
-      transportationResourceCost: 1200,
-    ),
-  ];
+        AircraftRoute(
+          name: "Route 3",
+          // New route
+          startPoint: airports[1],
+          endPoint: airports[4],
+          routeProfit: 15000,
+          routePriority: RoutePriority.mid,
+        ),
+      ];
+
+  List<Aircraft> get aircrafts => [
+        Aircraft(
+          name: "Boeing 747",
+          aircraftRoutes: [routes[0]],
+          aircraftTechnicalState: AircraftTechnicalState.good,
+          fuelAmount: 5000.0,
+          transportSpaceAmount: 300,
+          aircraftCost: 100000000,
+          transportationResourceCost: 1000,
+        ),
+        Aircraft(
+          name: "Airbus A380",
+          aircraftRoutes: [routes[1]],
+          aircraftTechnicalState: AircraftTechnicalState.excellent,
+          fuelAmount: 6000.0,
+          transportSpaceAmount: 350,
+          aircraftCost: 120000000,
+          transportationResourceCost: 1200,
+        ),
+        Aircraft(
+          name: "Aircraft 3",
+          aircraftRoutes: [routes[2]],
+          aircraftTechnicalState: AircraftTechnicalState.good,
+          fuelAmount: 5500.0,
+          transportSpaceAmount: 320,
+          aircraftCost: 110000000,
+          transportationResourceCost: 1100,
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -152,12 +116,19 @@ class MyApp extends StatelessWidget {
     return AnimatedBuilder(
       animation: settingsController,
       builder: (BuildContext context, Widget? child) {
-        return BlocProvider(
-          create: (_) => CoreDataCubit(
-            airports: airports,
-            aircraftRoutes: routes,
-            aircrafts: aircrafts,
-          ),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) => CoreDataCubit(
+                airports: airports,
+                aircraftRoutes: routes,
+                aircrafts: aircrafts,
+              ),
+            ),
+            BlocProvider(
+              create: (_) => AircraftFlightSimulationCubit(aircrafts),
+            ),
+          ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             // Providing a restorationScopeId allows the Navigator built by the
