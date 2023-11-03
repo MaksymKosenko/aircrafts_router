@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'package:aircrafts_router/src/bloc/aircraft_cubit/aircraft_cubit.dart';
+import 'package:aircrafts_router/src/algorithm_util/models/aircraft.dart';
+import 'package:aircrafts_router/src/algorithm_util/models/aircraft_route.dart';
+import 'package:aircrafts_router/src/bloc/aircraft_data_cubit/aircraft_data_cubit.dart';
 import 'package:aircrafts_router/src/ui/app_dimensions.dart';
 import 'package:aircrafts_router/src/ui/widgets/digits_input_field.dart';
-import 'package:aircrafts_router/src/ui/widgets/route_data.dart';
-import '../../algorithm_util/models/aircraft.dart';
-import '../../algorithm_util/models/aircraft_route.dart';
+import 'package:aircrafts_router/src/ui/widgets/route_data_widget.dart';
 
 class AircraftDataEditor extends StatefulWidget {
-  const AircraftDataEditor({super.key, required this.aircraft});
+  const AircraftDataEditor({Key? key, required this.aircraft})
+      : super(key: key);
 
   final Aircraft aircraft;
 
@@ -26,29 +27,34 @@ class _AircraftDataEditorState extends State<AircraftDataEditor> {
   };
 
   RoutePriority? selectedRoutePriority;
-  TextEditingController routeProfitController = TextEditingController();
-  TextEditingController aircraftCostController = TextEditingController();
-  TextEditingController transportationResourceCostController =
-      TextEditingController();
-  TextEditingController transportationSpaceAmountController =
-      TextEditingController();
-
-  late AircraftCubit aircraftCubit = AircraftCubit(aircraft: widget.aircraft);
+  late TextEditingController routeProfitController;
+  late TextEditingController aircraftCostController;
+  late TextEditingController transportationResourceCostController;
+  late TextEditingController transportationSpaceAmountController;
+  late AircraftDataCubit aircraftCubit;
 
   @override
   void initState() {
     super.initState();
     selectedRoutePriority = widget.aircraft.aircraftRoutes.first.routePriority;
-    routeProfitController.text =
-        widget.aircraft.aircraftRoutes.first.routeProfit.toString();
+    routeProfitController = TextEditingController(
+        text: widget.aircraft.aircraftRoutes.first.routeProfit.toString());
+    aircraftCostController =
+        TextEditingController(text: widget.aircraft.aircraftCost.toString());
+    transportationResourceCostController = TextEditingController(
+        text: widget.aircraft.transportationResourceCost.toString());
+    transportationSpaceAmountController = TextEditingController(
+        text: widget.aircraft.transportSpaceAmount.toString());
+    aircraftCubit = AircraftDataCubit(aircraft: widget.aircraft);
+  }
 
-    aircraftCostController.text = widget.aircraft.aircraftCost.toString();
-
-    transportationResourceCostController.text =
-        widget.aircraft.transportationResourceCost.toString();
-
-    transportationSpaceAmountController.text =
-        widget.aircraft.transportSpaceAmount.toString();
+  @override
+  void dispose() {
+    routeProfitController.dispose();
+    aircraftCostController.dispose();
+    transportationResourceCostController.dispose();
+    transportationSpaceAmountController.dispose();
+    super.dispose();
   }
 
   @override
@@ -63,18 +69,18 @@ class _AircraftDataEditorState extends State<AircraftDataEditor> {
           Text('Aircraft name: ${widget.aircraft.name}'),
           const Text('Aircraft routes:'),
           for (var route in widget.aircraft.aircraftRoutes)
-            RouteData(aircraftRoute: route),
+            RouteDataWidget(aircraftRoute: route),
           Row(
             children: [
               const Text('Aircraft technical state:   '),
               DropdownButton<AircraftTechnicalState>(
                 value: widget.aircraft.aircraftTechnicalState,
-                items: AircraftTechnicalState.values
-                    .map((state) => DropdownMenuItem(
-                          value: state,
-                          child: Text(aircraftTechnicalStates[state]!),
-                        ))
-                    .toList(),
+                items: AircraftTechnicalState.values.map((state) {
+                  return DropdownMenuItem(
+                    value: state,
+                    child: Text(aircraftTechnicalStates[state]!),
+                  );
+                }).toList(),
                 onChanged: (state) {
                   setState(() {
                     aircraftCubit.changeAircraftTechnicalState(state);
