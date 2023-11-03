@@ -1,8 +1,9 @@
-import 'package:aircrafts_router/src/algorithm_util/models/aircraft.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AircraftCubit extends Cubit<Aircraft> {
-  AircraftCubit({required this.aircraft}) : super(aircraft);
+import 'package:aircrafts_router/src/algorithm_util/models/aircraft.dart';
+
+class AircraftDataCubit extends Cubit<Aircraft> {
+  AircraftDataCubit({required this.aircraft}) : super(aircraft);
 
   final Aircraft aircraft;
 
