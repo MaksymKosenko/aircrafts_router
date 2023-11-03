@@ -51,6 +51,17 @@ class Aircraft {
   int transportationResourceCost;
 
   bool isReachedTransitionPoint;
+
+  Aircraft clone() => Aircraft(
+        name: name,
+        baseAircraftPosition: baseAircraftPosition,
+        aircraftRoutes: aircraftRoutes,
+        aircraftTechnicalState: aircraftTechnicalState,
+        fuelAmount: fuelAmount,
+        transportSpaceAmount: transportSpaceAmount,
+        aircraftCost: aircraftCost,
+        transportationResourceCost: transportationResourceCost,
+      );
 }
 
 enum AircraftFlightState {
