@@ -1,59 +1,73 @@
-import 'dart:math';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:aircrafts_router/src/algorithm_util/models/aircraft.dart';
 import 'package:aircrafts_router/src/bloc/aircraft_flight_simulation_cubit/aircraft_flight_simulation_cubit.dart';
 
 class AircraftWidget extends StatefulWidget {
-  const AircraftWidget({Key? key, required this.aircraft}) : super(key: key);
-
   final Aircraft aircraft;
+
+  const AircraftWidget({Key? key, required this.aircraft}) : super(key: key);
 
   @override
   State<AircraftWidget> createState() => _AircraftWidgetState();
 }
 
 class _AircraftWidgetState extends State<AircraftWidget> {
-  Offset get currentPosition {
-    return context
-        .read<AircraftFlightSimulationCubit>()
-        .getDisplayAircraftPosition(widget.aircraft);
-  }
-
-  Offset get airportPosition {
-    return widget
-        .aircraft.aircraftRoutes.first.endPoint.airportPosition.position;
-  }
-
-  double get rotationAngle => _calculateRotationAngle(airportPosition);
+  late Offset currentPosition;
+  late Offset airportPosition;
+  late double rotationAngle;
 
   @override
+  void initState() {
+    super.initState();
+    currentPosition = context
+        .read<AircraftFlightSimulationCubit>()
+        .getDisplayAircraftPosition(widget.aircraft);
+    airportPosition =
+        widget.aircraft.aircraftRoutes.first.endPoint.airportPosition.position;
+    rotationAngle = calculateRotationAngle();
+  }
+
+  double calculateRotationAngle() {
+    final dx = airportPosition.dx - currentPosition.dx;
+    final dy = currentPosition.dy - airportPosition.dy;
+
+    double angle = math.atan2(dy, dx);
+    angle = -angle + math.pi / 2;
+
+    return angle < 0 ? angle + 2 * math.pi : angle;
+  }
+
   Widget build(BuildContext context) {
     return Positioned(
       left: currentPosition.dx,
       top: currentPosition.dy,
       child: Column(
         children: [
-          Text(widget.aircraft.name),
-          Transform.rotate(
-            angle: rotationAngle,
-            child: const IconButton(
-              onPressed: null,
-              icon: Icon(
-                Icons.airplanemode_active,
-              ),
-            ),
-          ),
+          buildAircraftName(),
+          buildRotatedAircraftIcon(),
         ],
       ),
     );
   }
 
-  double _calculateRotationAngle(Offset target) {
-    double radians = atan2(target.dy, target.dx);
-    double degrees = radians * 180 / pi;
+  Widget buildAircraftName() {
+    return Text(widget.aircraft.name);
+  }
 
-    return degrees;
+  Widget buildRotatedAircraftIcon() {
+    return Transform.rotate(
+      angle: rotationAngle,
+      child: const IconButton(
+        onPressed: null,
+        icon: Icon(
+          Icons.airplanemode_active,
+        ),
+      ),
+    );
   }
 }
