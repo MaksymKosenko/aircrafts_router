@@ -12,11 +12,11 @@ class AlgorithmUtil {
     return _instance;
   }
 
-  late Map<AircraftRoute, Aircraft> _generatedRoutes;
+  late List<AircraftRoute> _generatedRoutes;
 
-  Map<AircraftRoute, Aircraft> get generatedRoutes => _generatedRoutes;
+  List<AircraftRoute> get generatedRoutes => _generatedRoutes;
 
-  set generatedRoutes(Map<AircraftRoute, Aircraft> generatedRoutes) {
+  set generatedRoutes(List<AircraftRoute> generatedRoutes) {
     _generatedRoutes = generatedRoutes;
   }
 
@@ -24,12 +24,7 @@ class AlgorithmUtil {
       List<Aircraft> planes) {
     //TODO: implement some routes calculation
     //As for now, data is hardcoded
-    generatedRoutes = <AircraftRoute, Aircraft>{
-      routes[1]: planes[0],
-      routes[2]: planes[0],
-      routes[0]: planes[1],
-      routes[3]: planes[1],
-    };
+    generatedRoutes = routes;
   }
 
   void updateGeneratedRoutesScheme(

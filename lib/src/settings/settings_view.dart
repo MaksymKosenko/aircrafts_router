@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:aircrafts_router/src/bloc/core_data_cubit/core_data_cubit.dart';
+import 'package:aircrafts_router/src/ui/app_dimensions.dart';
+import 'package:aircrafts_router/src/ui/widgets/aircraft_data_card.dart';
 import 'settings_controller.dart';
 
-/// Displays the various settings that can be customized by the user.
-///
-/// When a user changes a setting, the SettingsController is updated and
-/// Widgets that listen to the SettingsController are rebuilt.
 class SettingsView extends StatelessWidget {
-  const SettingsView({Key? key, required this.controller}) : super(key: key);
+  const SettingsView({
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
 
   static const routeName = '/settings';
 
@@ -18,34 +22,57 @@ class SettingsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
+        actions: [
+          _buildThemeDropdown(),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        // Glue the SettingsController to the theme selection DropdownButton.
-        //
-        // When a user selects a theme from the dropdown list, the
-        // SettingsController is updated, which rebuilds the MaterialApp.
-        child: DropdownButton<ThemeMode>(
-          // Read the selected themeMode from the controller
-          value: controller.themeMode,
-          // Call the updateThemeMode method any time the user selects a theme.
-          onChanged: controller.updateThemeMode,
-          items: const [
-            DropdownMenuItem(
-              value: ThemeMode.system,
-              child: Text('System Theme'),
-            ),
-            DropdownMenuItem(
-              value: ThemeMode.light,
-              child: Text('Light Theme'),
-            ),
-            DropdownMenuItem(
-              value: ThemeMode.dark,
-              child: Text('Dark Theme'),
-            )
-          ],
+      body: BlocBuilder<CoreDataCubit, CoreDataState>(
+        builder: (context, state) {
+          return _buildAircraftList(state, context);
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Handle create aircraft action
+        },
+        child: const Text('Create Aircraft'),
+      ),
+    );
+  }
+
+  Widget _buildThemeDropdown() {
+    return DropdownButton<ThemeMode>(
+      value: controller.themeMode,
+      onChanged: controller.updateThemeMode,
+      items: const [
+        DropdownMenuItem(
+          value: ThemeMode.system,
+          child: Text('System Theme'),
         ),
-      ),
+        DropdownMenuItem(
+          value: ThemeMode.light,
+          child: Text('Light Theme'),
+        ),
+        DropdownMenuItem(
+          value: ThemeMode.dark,
+          child: Text('Dark Theme'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAircraftList(CoreDataState state, BuildContext context) {
+    if (state.aircrafts.isEmpty) {
+      return const Center(
+        child: Text('No airplanes!'),
+      );
+    }
+    return ListView.builder(
+      itemCount: state.aircrafts.length,
+      itemExtent: AppDimensions.size(context).height * 0.15,
+      itemBuilder: (context, index) {
+        return AircraftDataCard(aircraft: state.aircrafts[index]);
+      },
     );
   }
 }

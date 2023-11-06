@@ -61,7 +61,7 @@ class ResourceTrackerBloc {
   }
 
   double distanceBetweenTwoPoints(AirportPosition a, AirportPosition b) {
-    return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+    return 0;//sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
   }
 
   //void changeAllAircraftsResource(Aircraft aircraft) {}

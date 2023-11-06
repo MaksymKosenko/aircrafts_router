@@ -8,7 +8,7 @@ class AircraftRoute {
     required this.endPoint,
     required this.routeProfit,
     required this.routePriority,
-  });
+  }) : emergencySituationOnTheRouter = EmergencySituationOnTheRouter.none;
 
   ///AircraftRoute name
   final String name;
@@ -29,7 +29,7 @@ class AircraftRoute {
   RoutePriority routePriority;
 
   ///Emergency Situation that may be the reason of Route change
-  EmergencySituationOnTheRouter? emergencySituationOnTheRouter;
+  EmergencySituationOnTheRouter emergencySituationOnTheRouter;
 }
 
 enum RoutePriority {
@@ -40,6 +40,7 @@ enum RoutePriority {
 }
 
 enum EmergencySituationOnTheRouter {
+  none,
   badWeather,
   aircraftBreakdown,
   transportationObjectIssue,
