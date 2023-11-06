@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'algorithm_util/algorithm_util.dart';
 import 'algorithm_util/models/aircraft.dart';
 import 'algorithm_util/models/airport.dart';
 import 'algorithm_util/models/aircraft_route.dart';
@@ -92,16 +93,16 @@ class MyApp extends StatelessWidget {
           aircraftRoutes: [routes[1]],
           aircraftTechnicalState: AircraftTechnicalState.excellent,
           fuelAmount: 6000.0,
-          transportSpaceAmount: 350,
+          transportSpaceAmount: 400,
           aircraftCost: 120000000,
           transportationResourceCost: 1200,
         ),
         Aircraft(
-          name: "Aircraft 3",
+          name: "Messerschmitt Bf 109 ✙",
           aircraftRoutes: [routes[2]],
           aircraftTechnicalState: AircraftTechnicalState.good,
           fuelAmount: 5500.0,
-          transportSpaceAmount: 320,
+          transportSpaceAmount: 100,
           aircraftCost: 110000000,
           transportationResourceCost: 1100,
         ),
@@ -109,10 +110,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Glue the SettingsController to the MaterialApp.
-    //
-    // The AnimatedBuilder Widget listens to the SettingsController for changes.
-    // Whenever the user updates their settings, the MaterialApp is rebuilt.
+    AlgorithmUtil().generateRoutesScheme(airports, routes, aircrafts);
     return AnimatedBuilder(
       animation: settingsController,
       builder: (BuildContext context, Widget? child) {
@@ -121,7 +119,7 @@ class MyApp extends StatelessWidget {
             BlocProvider(
               create: (_) => CoreDataCubit(
                 airports: airports,
-                aircraftRoutes: routes,
+                aircraftRoutes: AlgorithmUtil().generatedRoutes,
                 aircrafts: aircrafts,
               ),
             ),
@@ -161,7 +159,7 @@ class MyApp extends StatelessWidget {
             // Define a light and dark color theme. Then, read the user's
             // preferred ThemeMode (light, dark, or system default) from the
             // SettingsController to display the correct theme.
-            theme: ThemeData(),
+            theme: ThemeData(useMaterial3: true),
             darkTheme: ThemeData.dark(),
             themeMode: settingsController.themeMode,
 
