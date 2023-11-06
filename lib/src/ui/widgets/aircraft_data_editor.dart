@@ -26,7 +26,7 @@ class _AircraftDataEditorState extends State<AircraftDataEditor> {
     AircraftTechnicalState.critical: 'Critical',
   };
 
-  RoutePriority? selectedRoutePriority;
+  Priority? selectedRoutePriority;
   late TextEditingController routeProfitController;
   late TextEditingController aircraftCostController;
   late TextEditingController transportationResourceCostController;

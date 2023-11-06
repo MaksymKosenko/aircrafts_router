@@ -16,10 +16,10 @@ class RouteDataWidget extends StatefulWidget {
 
 class _RouteDataWidgetState extends State<RouteDataWidget> {
   static const routePriorityMap = {
-    RoutePriority.critical: 'Critical',
-    RoutePriority.high: 'High',
-    RoutePriority.mid: 'Mid',
-    RoutePriority.low: 'Low',
+    Priority.critical: 'Critical',
+    Priority.high: 'High',
+    Priority.mid: 'Mid',
+    Priority.low: 'Low',
   };
 
   static const emergencySituation = {
@@ -69,9 +69,9 @@ class _RouteDataWidgetState extends State<RouteDataWidget> {
         Row(
           children: [
             const Text('Route Priority: '),
-            DropdownButton<RoutePriority>(
+            DropdownButton<Priority>(
               value: routeCubit.route.routePriority,
-              items: RoutePriority.values.map((priority) {
+              items: Priority.values.map((priority) {
                 return DropdownMenuItem(
                   value: priority,
                   child: Text(routePriorityMap[priority] ?? ''),

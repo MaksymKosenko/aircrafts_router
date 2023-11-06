@@ -26,13 +26,13 @@ class AircraftRoute {
   int routeProfit;
 
   ///Route priority over the other Routes
-  RoutePriority routePriority;
+  Priority routePriority;
 
   ///Emergency Situation that may be the reason of Route change
   EmergencySituationOnTheRouter emergencySituationOnTheRouter;
 }
 
-enum RoutePriority {
+enum Priority {
   low,
   mid,
   high,

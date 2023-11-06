@@ -59,14 +59,14 @@ class MyApp extends StatelessWidget {
           startPoint: airports[0],
           endPoint: airports[1],
           routeProfit: 10000,
-          routePriority: RoutePriority.high,
+          routePriority: Priority.high,
         ),
         AircraftRoute(
           name: "Route 2",
           startPoint: airports[2],
           endPoint: airports[3],
           routeProfit: 12000,
-          routePriority: RoutePriority.critical,
+          routePriority: Priority.critical,
         ),
         AircraftRoute(
           name: "Route 3",
@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
           startPoint: airports[1],
           endPoint: airports[4],
           routeProfit: 15000,
-          routePriority: RoutePriority.mid,
+          routePriority: Priority.mid,
         ),
       ];
 

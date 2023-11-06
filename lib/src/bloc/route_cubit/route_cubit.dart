@@ -10,7 +10,7 @@ class RouteCubit extends Cubit<AircraftRoute> {
     route.routeProfit = int.parse(profit);
   }
 
-  void changeRoutePriority(RoutePriority? priority) {
+  void changeRoutePriority(Priority? priority) {
     if (priority == null) return;
     route.routePriority = priority;
   }
