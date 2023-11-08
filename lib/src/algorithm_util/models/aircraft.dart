@@ -1,8 +1,10 @@
 import 'package:aircrafts_router/src/algorithm_util/models/aircraft_route.dart';
+import 'package:aircrafts_router/src/algorithm_util/models/airport.dart';
 
 class Aircraft {
   Aircraft({
     required this.name,
+    required this.baseAircraftPosition,
     required this.aircraftRoutes,
     required this.aircraftTechnicalState,
     required this.fuelAmount,
@@ -14,6 +16,8 @@ class Aircraft {
 
   ///Aircraft name
   final String name;
+
+  AirportPosition baseAircraftPosition;
 
   List<AircraftRoute> aircraftRoutes;
 

@@ -7,6 +7,7 @@ import 'algorithm_util/algorithm_util.dart';
 import 'algorithm_util/models/aircraft.dart';
 import 'algorithm_util/models/airport.dart';
 import 'algorithm_util/models/aircraft_route.dart';
+import 'algorithm_util/models/transportation_resource.dart';
 import 'bloc/aircraft_flight_simulation_cubit/aircraft_flight_simulation_cubit.dart';
 import 'bloc/core_data_cubit/core_data_cubit.dart';
 import 'features/sample_feature/sample_item_details_view.dart';
@@ -34,6 +35,12 @@ class MyApp extends StatelessWidget {
       totalAircraftAmount: 3,
     ),
     Airport(
+      name: "C",
+      airportPosition: const AirportPosition(5, 5),
+      fuelAmount: 40,
+      totalAircraftAmount: 3,
+    ),
+    Airport(
       name: "D",
       airportPosition: const AirportPosition(0, 0),
       fuelAmount: 40,
@@ -42,12 +49,6 @@ class MyApp extends StatelessWidget {
     Airport(
       name: "E",
       airportPosition: const AirportPosition(0, 3),
-      fuelAmount: 40,
-      totalAircraftAmount: 3,
-    ),
-    Airport(
-      name: "C",
-      airportPosition: const AirportPosition(5, 5),
       fuelAmount: 40,
       totalAircraftAmount: 3,
     ),
@@ -81,7 +82,8 @@ class MyApp extends StatelessWidget {
   List<Aircraft> get aircrafts => [
         Aircraft(
           name: "Boeing 747",
-          aircraftRoutes: [routes[0]],
+          baseAircraftPosition: airports[0].airportPosition,
+          aircraftRoutes: [],//[routes[0]],
           aircraftTechnicalState: AircraftTechnicalState.good,
           fuelAmount: 5000.0,
           transportSpaceAmount: 300,
@@ -90,7 +92,8 @@ class MyApp extends StatelessWidget {
         ),
         Aircraft(
           name: "Airbus A380",
-          aircraftRoutes: [routes[1]],
+          baseAircraftPosition: airports[2].airportPosition,
+          aircraftRoutes: [],//[routes[1]],
           aircraftTechnicalState: AircraftTechnicalState.excellent,
           fuelAmount: 6000.0,
           transportSpaceAmount: 400,
@@ -99,18 +102,93 @@ class MyApp extends StatelessWidget {
         ),
         Aircraft(
           name: "Messerschmitt Bf 109 ✙",
-          aircraftRoutes: [routes[2]],
+          baseAircraftPosition: airports[1].airportPosition,
+          aircraftRoutes: [],//[routes[2]],
           aircraftTechnicalState: AircraftTechnicalState.good,
           fuelAmount: 5500.0,
-          transportSpaceAmount: 100,
+          transportSpaceAmount: 200,
           aircraftCost: 110000000,
           transportationResourceCost: 1100,
         ),
       ];
 
+  List<TransportationResource> get transportationResources => [
+        TransportationResource(
+          startPoint: airports[0],
+          endPoint: airports[1],
+          amount: 200,
+          costPerUnit: 10,
+          priority: Priority.mid,
+        ),
+        TransportationResource(
+          startPoint: airports[1],
+          endPoint: airports[2],
+          amount: 300,
+          costPerUnit: 5,
+          priority: Priority.mid,
+        ),
+        TransportationResource(
+          startPoint: airports[3],
+          endPoint: airports[4],
+          amount: 400,
+          costPerUnit: 10,
+          priority: Priority.mid,
+        ),
+        TransportationResource(
+          startPoint: airports[4],
+          endPoint: airports[2],
+          amount: 100,
+          costPerUnit: 100,
+          priority: Priority.high,
+        ),
+        TransportationResource(
+          startPoint: airports[2],
+          endPoint: airports[1],
+          amount: 50,
+          costPerUnit: 100,
+          priority: Priority.critical,
+        ),
+        TransportationResource(
+          startPoint: airports[0],
+          endPoint: airports[4],
+          amount: 300,
+          costPerUnit: 10,
+          priority: Priority.mid,
+        ),
+        TransportationResource(
+          startPoint: airports[0],
+          endPoint: airports[3],
+          amount: 400,
+          costPerUnit: 10,
+          priority: Priority.mid,
+        ),
+        TransportationResource(
+          startPoint: airports[3],
+          endPoint: airports[0],
+          amount: 300,
+          costPerUnit: 5,
+          priority: Priority.mid,
+        ),
+        TransportationResource(
+          startPoint: airports[2],
+          endPoint: airports[3],
+          amount: 200,
+          costPerUnit: 5,
+          priority: Priority.mid,
+        ),
+        TransportationResource(
+          startPoint: airports[1],
+          endPoint: airports[4],
+          amount: 400,
+          costPerUnit: 1,
+          priority: Priority.mid,
+        ),
+      ];
+
   @override
   Widget build(BuildContext context) {
-    AlgorithmUtil().generateRoutesScheme(airports, routes, aircrafts);
+    AlgorithmUtil()
+        .generateStartRoutes(airports, transportationResources, aircrafts);
     return AnimatedBuilder(
       animation: settingsController,
       builder: (BuildContext context, Widget? child) {
@@ -120,11 +198,11 @@ class MyApp extends StatelessWidget {
               create: (_) => CoreDataCubit(
                 airports: airports,
                 aircraftRoutes: AlgorithmUtil().generatedRoutes,
-                aircrafts: aircrafts,
+                aircrafts: AlgorithmUtil().aircrafts,
               ),
             ),
             BlocProvider(
-              create: (_) => AircraftFlightSimulationCubit(aircrafts),
+              create: (_) => AircraftFlightSimulationCubit(AlgorithmUtil().aircrafts),
             ),
           ],
           child: MaterialApp(
