@@ -82,7 +82,7 @@ class MyApp extends StatelessWidget {
   List<Aircraft> get aircrafts => [
         Aircraft(
           name: "Boeing 747",
-          baseAircraftPosition: airports[0].airportPosition,
+          baseAircraftPosition: airports[0],
           aircraftRoutes: [],//[routes[0]],
           aircraftTechnicalState: AircraftTechnicalState.good,
           fuelAmount: 5000.0,
@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
         ),
         Aircraft(
           name: "Airbus A380",
-          baseAircraftPosition: airports[2].airportPosition,
+          baseAircraftPosition: airports[2],
           aircraftRoutes: [],//[routes[1]],
           aircraftTechnicalState: AircraftTechnicalState.excellent,
           fuelAmount: 6000.0,
@@ -102,7 +102,7 @@ class MyApp extends StatelessWidget {
         ),
         Aircraft(
           name: "Messerschmitt Bf 109 ✙",
-          baseAircraftPosition: airports[1].airportPosition,
+          baseAircraftPosition: airports[1],
           aircraftRoutes: [],//[routes[2]],
           aircraftTechnicalState: AircraftTechnicalState.good,
           fuelAmount: 5500.0,

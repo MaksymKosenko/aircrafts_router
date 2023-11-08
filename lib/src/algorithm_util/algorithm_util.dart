@@ -20,7 +20,11 @@ class AlgorithmUtil {
   //Should be moved to bloc
   final List<Aircraft> _aircrafts = [];
 
+  //Should be moved to bloc
   List<Aircraft> get aircrafts => _aircrafts;
+
+  //Should be moved to bloc
+  final List<Airport> _airports = [];
 
   late final List<TransportationResource> _criticalPriorityRoutes;
 
@@ -35,6 +39,7 @@ class AlgorithmUtil {
     List<TransportationResource> transportationResources,
     List<Aircraft> planes,
   ) {
+    _airports.addAll(airports);
     _criticalPriorityRoutes =
         sortByPriority(transportationResources, Priority.critical);
 
@@ -48,12 +53,33 @@ class AlgorithmUtil {
     planes.forEach((plane) {
       AircraftRoute? nextRoute = getNextRoute(plane);
       if (nextRoute != null) {
+        removeFromList(nextRoute);
         _generatedRoutes.add(nextRoute);
         plane.aircraftRoutes.add(nextRoute);
         aircrafts.add(plane);
-        removeFromList(nextRoute);
       }
     });
+  }
+
+  AircraftRoute getAdditionalTransitionIfNeeded(
+      Aircraft plane, AircraftRoute route) {
+    AirportPosition routeStartPosition = plane.aircraftRoutes.isEmpty
+        ? plane.baseAircraftPosition.airportPosition
+        : route.startPoint.airportPosition;
+
+    if (routeStartPosition != route.startPoint.airportPosition) {
+      return AircraftRoute(
+        name: "Route From${plane.baseAircraftPosition}to${route.endPoint.name}",
+        startPoint: _airports.firstWhere((element) =>
+            element.airportPosition.position == routeStartPosition.position),
+        transitionPoint: route.startPoint,
+        endPoint: route.endPoint,
+        routeProfit: route.routeProfit,
+        routePriority: route.routePriority,
+      );
+    } else {
+      return route;
+    }
   }
 
   void removeFromList(AircraftRoute route) {
@@ -104,7 +130,7 @@ class AlgorithmUtil {
 
   AircraftRoute? getNextRoute(Aircraft plane) {
     AirportPosition routeStartPosition = plane.aircraftRoutes.isEmpty
-        ? plane.baseAircraftPosition
+        ? plane.baseAircraftPosition.airportPosition
         : plane.aircraftRoutes.first.endPoint.airportPosition;
 
     if (_criticalPriorityRoutes.isNotEmpty) {
@@ -159,7 +185,7 @@ class AlgorithmUtil {
       TransportationResource transportation) {
     return AircraftRoute(
       name:
-          "Route From${transportation.startPoint}to${transportation.endPoint}",
+          "Route From${transportation.startPoint.name}to${transportation.endPoint.name}",
       startPoint: transportation.startPoint,
       endPoint: transportation.endPoint,
       routeProfit: transportation.costPerUnit * transportation.amount,

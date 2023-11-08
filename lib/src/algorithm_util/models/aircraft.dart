@@ -17,7 +17,7 @@ class Aircraft {
   ///Aircraft name
   final String name;
 
-  AirportPosition baseAircraftPosition;
+  Airport baseAircraftPosition;
 
   List<AircraftRoute> aircraftRoutes;
 
