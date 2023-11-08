@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:aircrafts_router/src/algorithm_util/models/aircraft_route.dart';
 import 'package:aircrafts_router/src/bloc/route_cubit/route_cubit.dart';
 import 'package:aircrafts_router/src/ui/widgets/digits_input_field.dart';
+import 'package:aircrafts_router/src/utils/constants.dart';
 
 class RouteDataWidget extends StatefulWidget {
   const RouteDataWidget({Key? key, required this.aircraftRoute})
@@ -15,21 +16,6 @@ class RouteDataWidget extends StatefulWidget {
 }
 
 class _RouteDataWidgetState extends State<RouteDataWidget> {
-  static const routePriorityMap = {
-    Priority.critical: 'Critical',
-    Priority.high: 'High',
-    Priority.mid: 'Mid',
-    Priority.low: 'Low',
-  };
-
-  static const emergencySituation = {
-    EmergencySituationOnTheRouter.transportationObjectIssue:
-        'Transportation Object Issue',
-    EmergencySituationOnTheRouter.badWeather: 'Bad Weather',
-    EmergencySituationOnTheRouter.aircraftBreakdown: 'Aircraft Breakdown',
-    EmergencySituationOnTheRouter.none: 'None',
-  };
-
   late TextEditingController routeProfitController;
   late RouteCubit routeCubit;
 
@@ -74,7 +60,7 @@ class _RouteDataWidgetState extends State<RouteDataWidget> {
               items: Priority.values.map((priority) {
                 return DropdownMenuItem(
                   value: priority,
-                  child: Text(routePriorityMap[priority] ?? ''),
+                  child: Text(Constants.routePriorities[priority] ?? ''),
                 );
               }).toList(),
               onChanged: (priority) {
@@ -93,7 +79,8 @@ class _RouteDataWidgetState extends State<RouteDataWidget> {
               items: EmergencySituationOnTheRouter.values.map((situation) {
                 return DropdownMenuItem(
                   value: situation,
-                  child: Text(emergencySituation[situation] ?? 'N/A'),
+                  child:
+                      Text(Constants.emergencySituations[situation] ?? 'N/A'),
                 );
               }).toList(),
               onChanged: (situation) {
