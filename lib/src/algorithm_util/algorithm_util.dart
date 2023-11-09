@@ -26,13 +26,13 @@ class AlgorithmUtil {
   //Should be moved to bloc
   final List<Airport> _airports = [];
 
-  late final List<TransportationResource> _criticalPriorityRoutes;
+  final List<TransportationResource> _criticalPriorityRoutes = [];
 
-  late final List<TransportationResource> _highPriorityRoutes;
+  final List<TransportationResource> _highPriorityRoutes = [];
 
-  late final List<TransportationResource> _midPriorityRoutes;
+  final List<TransportationResource> _midPriorityRoutes = [];
 
-  late final List<TransportationResource> _lowPriorityRoutes;
+  final List<TransportationResource> _lowPriorityRoutes = [];
 
   void generateStartRoutes(
     List<Airport> airports,
@@ -40,15 +40,17 @@ class AlgorithmUtil {
     List<Aircraft> planes,
   ) {
     _airports.addAll(airports);
-    _criticalPriorityRoutes =
-        sortByPriority(transportationResources, Priority.critical);
+    _criticalPriorityRoutes
+        .addAll(sortByPriority(transportationResources, Priority.critical));
 
-    _highPriorityRoutes =
-        sortByPriority(transportationResources, Priority.high);
+    _highPriorityRoutes
+        .addAll(sortByPriority(transportationResources, Priority.high));
 
-    _midPriorityRoutes = sortByPriority(transportationResources, Priority.mid);
+    _midPriorityRoutes
+        .addAll(sortByPriority(transportationResources, Priority.mid));
 
-    _lowPriorityRoutes = sortByPriority(transportationResources, Priority.low);
+    _lowPriorityRoutes
+        .addAll(sortByPriority(transportationResources, Priority.low));
 
     planes.forEach((plane) {
       AircraftRoute? nextRoute = getNextRoute(plane);
