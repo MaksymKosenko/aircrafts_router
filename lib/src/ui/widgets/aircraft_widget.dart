@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:aircrafts_router/src/algorithm_util/algorithm_util.dart';
 import 'package:aircrafts_router/src/bloc/selected_item_cubit/selected_item_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:aircrafts_router/src/algorithm_util/models/aircraft.dart';
 import 'package:aircrafts_router/src/bloc/aircraft_flight_simulation_cubit/aircraft_flight_simulation_cubit.dart';
+
+import '../../algorithm_util/models/aircraft_route.dart';
 
 class AircraftWidget extends StatefulWidget {
   const AircraftWidget({Key? key, required this.aircraft}) : super(key: key);
@@ -22,21 +25,25 @@ class _AircraftWidgetState extends State<AircraftWidget> {
 
   bool isListening = true;
 
-  bool isReachTransition = false;
 
   Offset get currentPosition =>
-      flightCubit.getDisplayAircraftPosition(widget.aircraft, targetPosition);
+      flightCubit.getDisplayAircraftPosition(widget.aircraft, startPosition, targetPosition);
+
+  Offset get startPosition {
+    Offset start =
+        widget.aircraft.aircraftRoutes.first.startPoint.airportPosition.position;
+    if (widget.aircraft.aircraftRoutes.first.transitionPoint != null && widget.aircraft.isReachedTransitionPoint) {
+      start = widget.aircraft.aircraftRoutes.first.transitionPoint!.airportPosition.position;
+    }
+    return start;
+  }
 
   Offset get targetPosition {
     Offset target =
         widget.aircraft.aircraftRoutes.first.endPoint.airportPosition.position;
-    if (widget.aircraft.aircraftRoutes.first.transitionPoint != null) {
-      isReachTransition
-          ? target = target
-          : target = widget.aircraft.aircraftRoutes.first.transitionPoint!
-              .airportPosition.position;
+    if (widget.aircraft.aircraftRoutes.first.transitionPoint != null && !widget.aircraft.isReachedTransitionPoint) {
+      target = widget.aircraft.aircraftRoutes.first.transitionPoint!.airportPosition.position;
     }
-
     return target;
   }
 
@@ -63,8 +70,15 @@ class _AircraftWidgetState extends State<AircraftWidget> {
               aircraft == widget.aircraft &&
               aircraft.aircraftRoutes.first.endPoint.airportPosition.position ==
                   currentPosition)) {
+
         print('${widget.aircraft.name} Finished');
-        isListening = false;
+        //TODO implement correctly
+        //Here should be nullifying of the aircraft
+        AircraftRoute? nextRoute = AlgorithmUtil().getNextRoute(widget.aircraft);
+        if(nextRoute != null) {
+          widget.aircraft.aircraftRoutes.add(nextRoute);
+        }
+        //isListening = false;
       }
     });
   }

@@ -37,9 +37,12 @@ class AircraftFlightSimulationCubit
     Offset startPoint = route.startPoint.airportPosition.position;
     Offset endPoint = route.endPoint.airportPosition.position;
 
+    bool needToProceed = false;
+
     if (aircraft.isReachedTransitionPoint && transitionPoint != null) {
       startPoint = transitionPoint;
       transitionPoint = null;
+      needToProceed = true;
     }
 
     double actualDistance;
@@ -65,8 +68,9 @@ class AircraftFlightSimulationCubit
       aircraft.currentPosition = distanceTraveled / actualDistance;
     } else {
       _changeAircraftState(aircraft, AircraftFlightState.completed);
+      //TODO implement later
+      //aircraft.isReachedTransitionPoint = false;
       aircraft.currentPosition = 0.0;
-      aircraft.isReachedTransitionPoint = false;
     }
 
     return aircraft;
@@ -89,9 +93,26 @@ class AircraftFlightSimulationCubit
     aircraft.currentPosition = 0.0;
   }
 
-  Offset getDisplayAircraftPosition(Aircraft aircraft, Offset target) {
-    final startPoint =
-        aircraft.aircraftRoutes.first.startPoint.airportPosition.position;
+  Aircraft getNullifiedAircraft(Aircraft aircraft) {
+    Aircraft _aircraft = Aircraft(
+      name: aircraft.name,
+      baseAircraftPosition: aircraft.baseAircraftPosition,
+      aircraftRoutes: [],
+      aircraftTechnicalState: aircraft.aircraftTechnicalState,
+      fuelAmount: aircraft.fuelAmount,
+      transportSpaceAmount: aircraft.transportSpaceAmount,
+      aircraftCost: aircraft.aircraftCost,
+      transportationResourceCost: aircraft.transportationResourceCost,
+    );
+    return _aircraft
+      ..isReachedTransitionPoint = false
+      ..flightState = AircraftFlightState.notStarted
+      ..currentPosition = 0;
+  }
+
+  Offset getDisplayAircraftPosition(
+      Aircraft aircraft, Offset start, Offset target) {
+    final startPoint = start;
     final endPoint = target;
     final currentPositionPercentage = aircraft.currentPosition;
 

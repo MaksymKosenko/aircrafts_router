@@ -14,14 +14,6 @@ class AlgorithmUtil {
     return _instance;
   }
 
-  Offset getBoeingPosition(
-      Offset startPoint, Offset endPoint, double currentPosition) {
-    return Offset(
-      startPoint.dx + (endPoint.dx - startPoint.dx) * currentPosition,
-      startPoint.dy + (endPoint.dy - startPoint.dy) * currentPosition,
-    );
-  }
-
   final List<AircraftRoute> _generatedRoutes = [];
 
   List<AircraftRoute> get generatedRoutes => _generatedRoutes;
