@@ -1,14 +1,15 @@
+import 'package:aircrafts_router/src/algorithm_util/algorithm_util.dart';
+import 'package:aircrafts_router/src/bloc/selected_item_cubit/selected_item_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-import 'algorithm_util/algorithm_util.dart';
 import 'algorithm_util/models/aircraft.dart';
 import 'algorithm_util/models/airport.dart';
 import 'algorithm_util/models/aircraft_route.dart';
 import 'algorithm_util/models/transportation_resource.dart';
 import 'bloc/aircraft_flight_simulation_cubit/aircraft_flight_simulation_cubit.dart';
+import 'bloc/algorithm_cubit/algorithm_cubit.dart';
 import 'bloc/core_data_cubit/core_data_cubit.dart';
 import 'features/sample_feature/sample_item_details_view.dart';
 import 'features/sample_feature/sample_item_list_view.dart';
@@ -83,7 +84,8 @@ class MyApp extends StatelessWidget {
         Aircraft(
           name: "Boeing 747",
           baseAircraftPosition: airports[0],
-          aircraftRoutes: [],//[routes[0]],
+          aircraftRoutes: [],
+          //[routes[0]],
           aircraftTechnicalState: AircraftTechnicalState.good,
           fuelAmount: 5000.0,
           transportSpaceAmount: 300,
@@ -93,7 +95,8 @@ class MyApp extends StatelessWidget {
         Aircraft(
           name: "Airbus A380",
           baseAircraftPosition: airports[2],
-          aircraftRoutes: [],//[routes[1]],
+          aircraftRoutes: [],
+          //[routes[1]],
           aircraftTechnicalState: AircraftTechnicalState.excellent,
           fuelAmount: 6000.0,
           transportSpaceAmount: 400,
@@ -103,7 +106,8 @@ class MyApp extends StatelessWidget {
         Aircraft(
           name: "Messerschmitt Bf 109 ✙",
           baseAircraftPosition: airports[1],
-          aircraftRoutes: [],//[routes[2]],
+          aircraftRoutes: [],
+          //[routes[2]],
           aircraftTechnicalState: AircraftTechnicalState.good,
           fuelAmount: 5500.0,
           transportSpaceAmount: 200,
@@ -187,22 +191,32 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AlgorithmUtil()
-        .generateStartRoutes(airports, transportationResources, aircrafts);
+    final algorithmCubit = AlgorithmCubit(
+      airports: airports,
+      transportationResources: transportationResources,
+      aircrafts: aircrafts,
+    );
     return AnimatedBuilder(
       animation: settingsController,
       builder: (BuildContext context, Widget? child) {
         return MultiBlocProvider(
           providers: [
             BlocProvider(
+              create: (_) => algorithmCubit,
+            ),
+            BlocProvider(
+              create: (_) => SelectedItemCubit(),
+            ),
+            BlocProvider(
               create: (_) => CoreDataCubit(
                 airports: airports,
-                aircraftRoutes: AlgorithmUtil().generatedRoutes,
-                aircrafts: AlgorithmUtil().aircrafts,
+                aircraftRoutes: algorithmCubit.state.generatedRoutes,
+                aircrafts: algorithmCubit.state.aircrafts,
               ),
             ),
             BlocProvider(
-              create: (_) => AircraftFlightSimulationCubit(AlgorithmUtil().aircrafts),
+              create: (_) =>
+                  AircraftFlightSimulationCubit(algorithmCubit.state.aircrafts),
             ),
           ],
           child: MaterialApp(

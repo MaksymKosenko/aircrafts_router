@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:math' as math;
+import 'package:aircrafts_router/src/bloc/selected_item_cubit/selected_item_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,20 +20,59 @@ class _AircraftWidgetState extends State<AircraftWidget> {
   late final AircraftFlightSimulationCubit flightCubit =
       context.read<AircraftFlightSimulationCubit>();
 
-  Offset get currentPosition =>
-      flightCubit.getDisplayAircraftPosition(widget.aircraft);
+  bool isListening = true;
 
-  Offset get airportPosition =>
-      widget.aircraft.aircraftRoutes.first.endPoint.airportPosition.position;
+  bool isReachTransition = false;
+
+  Offset get currentPosition =>
+      flightCubit.getDisplayAircraftPosition(widget.aircraft, targetPosition);
+
+  Offset get targetPosition {
+    Offset target =
+        widget.aircraft.aircraftRoutes.first.endPoint.airportPosition.position;
+    if (widget.aircraft.aircraftRoutes.first.transitionPoint != null) {
+      isReachTransition
+          ? target = target
+          : target = widget.aircraft.aircraftRoutes.first.transitionPoint!
+              .airportPosition.position;
+    }
+
+    return target;
+  }
 
   double get rotationAngle => calculateRotationAngle();
 
   double calculateRotationAngle() {
-    final dx = airportPosition.dx - currentPosition.dx;
-    final dy = currentPosition.dy - airportPosition.dy;
+    final dx = targetPosition.dx - currentPosition.dx;
+    final dy = currentPosition.dy - targetPosition.dy;
     double angle = math.atan2(dy, dx);
     angle = -angle + math.pi / 2;
     return angle < 0 ? angle + 2 * math.pi : angle;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    addListener();
+  }
+
+  void addListener() {
+    flightCubit.stream.listen((state) {
+      if (isListening &&
+          state.aircraftList.any((aircraft) =>
+              aircraft == widget.aircraft &&
+              aircraft.aircraftRoutes.first.endPoint.airportPosition.position ==
+                  currentPosition)) {
+        print('${widget.aircraft.name} Finished');
+        isListening = false;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    flightCubit.stream.drain();
+    super.dispose();
   }
 
   @override
@@ -44,9 +85,11 @@ class _AircraftWidgetState extends State<AircraftWidget> {
           Text(widget.aircraft.name),
           Transform.rotate(
             angle: rotationAngle,
-            child: const IconButton(
-              onPressed: null,
-              icon: Icon(
+            child: IconButton(
+              onPressed: () => context
+                  .read<SelectedItemCubit>()
+                  .selectAircraft(widget.aircraft),
+              icon: const Icon(
                 Icons.airplanemode_active,
               ),
             ),

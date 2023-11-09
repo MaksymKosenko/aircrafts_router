@@ -3,6 +3,7 @@ import 'package:aircrafts_router/src/algorithm_util/models/airport.dart';
 import 'models/aircraft.dart';
 import 'models/aircraft_route.dart';
 import 'models/transportation_resource.dart';
+import 'package:flutter/cupertino.dart';
 
 class AlgorithmUtil {
   AlgorithmUtil._privateConstructor();
@@ -11,6 +12,14 @@ class AlgorithmUtil {
 
   factory AlgorithmUtil() {
     return _instance;
+  }
+
+  Offset getBoeingPosition(
+      Offset startPoint, Offset endPoint, double currentPosition) {
+    return Offset(
+      startPoint.dx + (endPoint.dx - startPoint.dx) * currentPosition,
+      startPoint.dy + (endPoint.dy - startPoint.dy) * currentPosition,
+    );
   }
 
   final List<AircraftRoute> _generatedRoutes = [];
@@ -56,9 +65,10 @@ class AlgorithmUtil {
       AircraftRoute? nextRoute = getNextRoute(plane);
       if (nextRoute != null) {
         removeFromList(nextRoute);
-        _generatedRoutes.add(nextRoute);
-        plane.aircraftRoutes.add(nextRoute);
-        aircrafts.add(plane);
+        _generatedRoutes.add(getAdditionalTransitionIfNeeded(plane, nextRoute));
+        plane.aircraftRoutes
+            .add(getAdditionalTransitionIfNeeded(plane, nextRoute));
+        _aircrafts.add(plane);
       }
     });
   }
@@ -70,6 +80,18 @@ class AlgorithmUtil {
         : route.startPoint.airportPosition;
 
     if (routeStartPosition != route.startPoint.airportPosition) {
+      var start = _airports.firstWhere((element) =>
+          element.airportPosition.position == routeStartPosition.position);
+
+      var test = AircraftRoute(
+        name: "Route From${plane.baseAircraftPosition}to${route.endPoint.name}",
+        startPoint: start,
+        transitionPoint: route.startPoint,
+        endPoint: route.endPoint,
+        routeProfit: route.routeProfit,
+        routePriority: route.routePriority,
+      );
+
       return AircraftRoute(
         name: "Route From${plane.baseAircraftPosition}to${route.endPoint.name}",
         startPoint: _airports.firstWhere((element) =>

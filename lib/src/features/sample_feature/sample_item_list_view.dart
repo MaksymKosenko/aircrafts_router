@@ -1,3 +1,5 @@
+import 'package:aircrafts_router/src/bloc/selected_item_cubit/selected_item_cubit.dart';
+import 'package:aircrafts_router/src/ui/widgets/selected_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aircrafts_router/src/algorithm_util/models/aircraft.dart';
@@ -22,6 +24,9 @@ class _SampleItemListViewState extends State<SampleItemListView> {
   late final CoreDataCubit coreDataCubit;
   late final AircraftFlightSimulationCubit flightSimulationCubit;
 
+  Airport? selectedAirport;
+  Aircraft? selectedAircraft;
+
   @override
   void initState() {
     super.initState();
@@ -42,11 +47,20 @@ class _SampleItemListViewState extends State<SampleItemListView> {
       ),
       body: Padding(
         padding: AppDimensions.horizontalPadding24,
-        child: BlocBuilder<AircraftFlightSimulationCubit,
-            AircraftFlightSimulationState>(
-          builder: (context, state) {
-            return _buildAircraftsAndAirports(state.aircraftList);
-          },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            BlocBuilder<AircraftFlightSimulationCubit,
+                AircraftFlightSimulationState>(
+              builder: (context, state) {
+                return _buildAircraftsAndAirports(state.aircraftList);
+              },
+            ),
+            SizedBox(
+              width: AppDimensions.size(context).width * 0.3,
+              child: const SelectedItemWidget(),
+            ),
+          ],
         ),
       ),
     );
@@ -83,13 +97,16 @@ class _SampleItemListViewState extends State<SampleItemListView> {
   }
 
   Widget _buildAircraftsAndAirports(List<Aircraft> aircrafts) {
-    return Stack(
-      children: [
-        for (Airport airport in coreDataCubit.state.airports)
-          AirportWidget(airport: airport),
-        for (Aircraft aircraft in _getActiveAircrafts(aircrafts))
-          AircraftWidget(aircraft: aircraft),
-      ],
+    return SizedBox(
+      width: AppDimensions.size(context).width * 0.5,
+      child: Stack(
+        children: [
+          for (Airport airport in coreDataCubit.state.airports)
+            AirportWidget(airport: airport),
+          for (Aircraft aircraft in _getActiveAircrafts(aircrafts))
+            AircraftWidget(aircraft: aircraft),
+        ],
+      ),
     );
   }
 

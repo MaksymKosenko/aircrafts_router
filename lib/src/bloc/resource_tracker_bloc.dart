@@ -61,7 +61,10 @@ class ResourceTrackerBloc {
   }
 
   double distanceBetweenTwoPoints(AirportPosition a, AirportPosition b) {
-    return 0;//sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+    return sqrt(
+      pow(a.position.dx - b.position.dx, 2) +
+          pow(a.position.dy - b.position.dy, 2),
+    );
   }
 
   //void changeAllAircraftsResource(Aircraft aircraft) {}
@@ -75,8 +78,10 @@ class ResourceTrackerBloc {
             changeAirportResources(route.endPoint, aircraft);
           }
           if (aircraft.fuelAmount <= lowerLimitOfFuel) {
-            route.endPoint.fuelAmount -= (aircraft.maxFuelAmount - aircraft.fuelAmount);
-            aircraft.fuelAmount += (aircraft.maxFuelAmount - aircraft.fuelAmount);
+            route.endPoint.fuelAmount -=
+                (aircraft.maxFuelAmount - aircraft.fuelAmount);
+            aircraft.fuelAmount +=
+                (aircraft.maxFuelAmount - aircraft.fuelAmount);
           }
         });
       }

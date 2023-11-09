@@ -12,7 +12,8 @@ class Aircraft {
     required this.aircraftCost,
     required this.transportationResourceCost,
   })  : maxFuelAmount = fuelAmount,
-        flightState = AircraftFlightState.notStarted;
+        flightState = AircraftFlightState.notStarted,
+        isReachedTransitionPoint = false;
 
   ///Aircraft name
   final String name;
@@ -48,6 +49,8 @@ class Aircraft {
 
   ///Cost of the luggage or people
   int transportationResourceCost;
+
+  bool isReachedTransitionPoint;
 }
 
 enum AircraftFlightState {

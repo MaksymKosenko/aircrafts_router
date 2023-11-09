@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:aircrafts_router/src/algorithm_util/algorithm_util.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aircrafts_router/src/algorithm_util/models/aircraft.dart';
 
@@ -32,20 +33,40 @@ class AircraftFlightSimulationCubit
 
   Aircraft _updateAircraft(Aircraft aircraft) {
     final route = aircraft.aircraftRoutes.first;
-    final startPoint = route.startPoint.airportPosition.position;
-    final endPoint = route.endPoint.airportPosition.position;
+    Offset? transitionPoint = route.transitionPoint?.airportPosition.position;
+    Offset startPoint = route.startPoint.airportPosition.position;
+    Offset endPoint = route.endPoint.airportPosition.position;
 
-    final actualDistance = sqrt(pow(endPoint.dx - startPoint.dx, 2) +
-        pow(endPoint.dy - startPoint.dy, 2));
+    if (aircraft.isReachedTransitionPoint && transitionPoint != null) {
+      startPoint = transitionPoint;
+      transitionPoint = null;
+    }
 
-    final distanceTraveled =
+    double actualDistance;
+    double distanceTraveled =
         _defaultAircraftSpeed * 0.001 * _updateInterval.inMilliseconds;
 
-    aircraft.currentPosition += distanceTraveled / actualDistance;
+    if (aircraft.currentPosition < 1.0) {
+      if (transitionPoint != null) {
+        endPoint = transitionPoint;
+      }
+      actualDistance = sqrt(pow(endPoint.dx - startPoint.dx, 2) +
+          pow(endPoint.dy - startPoint.dy, 2));
+      aircraft.currentPosition += distanceTraveled / actualDistance;
+    } else if (aircraft.currentPosition >= 1.0 &&
+        aircraft.isReachedTransitionPoint == false &&
+        route.transitionPoint != null) {
+      aircraft.isReachedTransitionPoint = true;
 
-    if (aircraft.currentPosition >= 0.99) {
+      startPoint = route.transitionPoint!.airportPosition.position;
+      endPoint = route.endPoint.airportPosition.position;
+      actualDistance = sqrt(pow(endPoint.dx - startPoint.dx, 2) +
+          pow(endPoint.dy - startPoint.dy, 2));
+      aircraft.currentPosition = distanceTraveled / actualDistance;
+    } else {
       _changeAircraftState(aircraft, AircraftFlightState.completed);
-      aircraft.currentPosition = 1.0;
+      aircraft.currentPosition = 0.0;
+      aircraft.isReachedTransitionPoint = false;
     }
 
     return aircraft;
@@ -68,11 +89,10 @@ class AircraftFlightSimulationCubit
     aircraft.currentPosition = 0.0;
   }
 
-  Offset getDisplayAircraftPosition(Aircraft aircraft) {
+  Offset getDisplayAircraftPosition(Aircraft aircraft, Offset target) {
     final startPoint =
         aircraft.aircraftRoutes.first.startPoint.airportPosition.position;
-    final endPoint =
-        aircraft.aircraftRoutes.first.endPoint.airportPosition.position;
+    final endPoint = target;
     final currentPositionPercentage = aircraft.currentPosition;
 
     return Offset(
