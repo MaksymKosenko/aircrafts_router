@@ -1,7 +1,7 @@
-import 'package:aircrafts_router/src/bloc/selected_item_cubit/selected_item_cubit.dart';
-import 'package:aircrafts_router/src/ui/widgets/selected_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:aircrafts_router/src/ui/widgets/selected_item_widget.dart';
 import 'package:aircrafts_router/src/algorithm_util/models/aircraft.dart';
 import 'package:aircrafts_router/src/algorithm_util/models/airport.dart';
 import 'package:aircrafts_router/src/bloc/aircraft_flight_simulation_cubit/aircraft_flight_simulation_cubit.dart';
@@ -42,6 +42,7 @@ class _SampleItemListViewState extends State<SampleItemListView> {
         actions: [
           _buildPlayButton(),
           _buildStopButton(),
+          _buildRestartButton(),
           _buildSettingsButton(),
         ],
       ),
@@ -67,21 +68,44 @@ class _SampleItemListViewState extends State<SampleItemListView> {
   }
 
   Widget _buildPlayButton() {
-    return IconButton(
-      onPressed: () {
-        if (flightSimulationCubit.simulationTimer == null ||
-            !flightSimulationCubit.simulationTimer!.isActive) {
-          flightSimulationCubit.startSimulation();
+    return BlocBuilder<AircraftFlightSimulationCubit,
+        AircraftFlightSimulationState>(
+      builder: (context, state) {
+        if (state.isRunningSimulation) {
+          return const SizedBox();
         }
+        return IconButton(
+          onPressed: () {
+            if (state.isRunningSimulation) return;
+            flightSimulationCubit.startSimulation();
+          },
+          icon: const Icon(Icons.play_arrow),
+        );
       },
-      icon: const Icon(Icons.play_arrow),
     );
   }
 
   Widget _buildStopButton() {
+    return BlocBuilder<AircraftFlightSimulationCubit,
+        AircraftFlightSimulationState>(
+      builder: (context, state) {
+        if (state.isRunningSimulation) {
+          return IconButton(
+            onPressed: () {
+              flightSimulationCubit.stopSimulation();
+            },
+            icon: const Icon(Icons.stop_circle_outlined),
+          );
+        }
+        return const SizedBox();
+      },
+    );
+  }
+
+  Widget _buildRestartButton() {
     return IconButton(
       onPressed: () {
-        flightSimulationCubit.stopSimulation();
+        flightSimulationCubit.restartSimulation();
       },
       icon: const Icon(Icons.restore_rounded),
     );
