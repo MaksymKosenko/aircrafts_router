@@ -27,7 +27,6 @@ class AlgorithmCubit extends Cubit<AlgorithmState> {
     required List<TransportationResource> transportationResources,
     required List<Aircraft> aircrafts,
   }) {
-    print('cubit generateStartRoutes');
     algorithmUtil.generateStartRoutes(
       airports,
       transportationResources,
