@@ -75,17 +75,9 @@ class AlgorithmUtil {
       var start = _airports.firstWhere((element) =>
           element.airportPosition.position == routeStartPosition.position);
 
-      var test = AircraftRoute(
-        name: "Route From${plane.baseAircraftPosition}to${route.endPoint.name}",
-        startPoint: start,
-        transitionPoint: route.startPoint,
-        endPoint: route.endPoint,
-        routeProfit: route.routeProfit,
-        routePriority: route.routePriority,
-      );
-
       return AircraftRoute(
-        name: "Route From${plane.baseAircraftPosition}to${route.endPoint.name}",
+        name:
+            "Route From${plane.baseAircraftPosition.name}to${route.endPoint.name}",
         startPoint: _airports.firstWhere((element) =>
             element.airportPosition.position == routeStartPosition.position),
         transitionPoint: route.startPoint,
@@ -145,9 +137,8 @@ class AlgorithmUtil {
   }
 
   AircraftRoute? getNextRoute(Aircraft plane) {
-    AirportPosition routeStartPosition = plane.aircraftRoutes.isEmpty
-        ? plane.baseAircraftPosition.airportPosition
-        : plane.aircraftRoutes.first.endPoint.airportPosition;
+    AirportPosition routeStartPosition =
+        plane.baseAircraftPosition.airportPosition;
 
     if (_criticalPriorityRoutes.isNotEmpty) {
       try {

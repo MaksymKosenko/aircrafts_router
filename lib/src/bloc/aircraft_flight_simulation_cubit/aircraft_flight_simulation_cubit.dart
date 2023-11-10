@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:aircrafts_router/src/algorithm_util/algorithm_util.dart';
+import 'package:aircrafts_router/src/algorithm_util/models/aircraft_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aircrafts_router/src/algorithm_util/models/aircraft.dart';
 
@@ -33,16 +34,18 @@ class AircraftFlightSimulationCubit
 
   Aircraft _updateAircraft(Aircraft aircraft) {
     final route = aircraft.aircraftRoutes.first;
+
     Offset? transitionPoint = route.transitionPoint?.airportPosition.position;
     Offset startPoint = route.startPoint.airportPosition.position;
+    if (aircraft.baseAircraftPosition.airportPosition.position != startPoint) {
+      transitionPoint = startPoint;
+      startPoint = aircraft.baseAircraftPosition.airportPosition.position;
+    }
     Offset endPoint = route.endPoint.airportPosition.position;
-
-    bool needToProceed = false;
 
     if (aircraft.isReachedTransitionPoint && transitionPoint != null) {
       startPoint = transitionPoint;
       transitionPoint = null;
-      needToProceed = true;
     }
 
     double actualDistance;
@@ -66,11 +69,23 @@ class AircraftFlightSimulationCubit
       actualDistance = sqrt(pow(endPoint.dx - startPoint.dx, 2) +
           pow(endPoint.dy - startPoint.dy, 2));
       aircraft.currentPosition = distanceTraveled / actualDistance;
+    } else if (aircraft.currentPosition >= 1.0 &&
+        aircraft.baseAircraftPosition != route.startPoint &&
+        route.transitionPoint == null) {
+      aircraft.currentPosition = 0;
+      aircraft.baseAircraftPosition = route.startPoint;
     } else {
       _changeAircraftState(aircraft, AircraftFlightState.completed);
       //TODO implement later
-      //aircraft.isReachedTransitionPoint = false;
-      aircraft.currentPosition = 0.0;
+      aircraft.baseAircraftPosition = aircraft.aircraftRoutes.first.endPoint;
+      aircraft.aircraftRoutes = [];
+      AircraftRoute? nextRoute = AlgorithmUtil().getNextRoute(aircraft);
+      aircraft = getNullifiedAircraft(aircraft);
+
+      if (nextRoute != null) {
+        aircraft.aircraftRoutes.add(nextRoute);
+        AlgorithmUtil().removeFromList(nextRoute);
+      }
     }
 
     return aircraft;

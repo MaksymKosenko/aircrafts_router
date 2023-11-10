@@ -25,25 +25,41 @@ class _AircraftWidgetState extends State<AircraftWidget> {
 
   bool isListening = true;
 
-
-  Offset get currentPosition =>
-      flightCubit.getDisplayAircraftPosition(widget.aircraft, startPosition, targetPosition);
+  Offset get currentPosition => flightCubit.getDisplayAircraftPosition(
+      widget.aircraft, startPosition, targetPosition);
 
   Offset get startPosition {
-    Offset start =
-        widget.aircraft.aircraftRoutes.first.startPoint.airportPosition.position;
-    if (widget.aircraft.aircraftRoutes.first.transitionPoint != null && widget.aircraft.isReachedTransitionPoint) {
-      start = widget.aircraft.aircraftRoutes.first.transitionPoint!.airportPosition.position;
+    Offset start = widget
+        .aircraft.aircraftRoutes.first.startPoint.airportPosition.position;
+    if (widget.aircraft.aircraftRoutes.first.transitionPoint != null &&
+        widget.aircraft.isReachedTransitionPoint) {
+      start = widget.aircraft.aircraftRoutes.first.transitionPoint!
+          .airportPosition.position;
     }
+
+    if (widget.aircraft.aircraftRoutes.first.startPoint !=
+        widget.aircraft.baseAircraftPosition) {
+      start = widget.aircraft.baseAircraftPosition.airportPosition.position;
+    }
+
     return start;
   }
 
   Offset get targetPosition {
     Offset target =
         widget.aircraft.aircraftRoutes.first.endPoint.airportPosition.position;
-    if (widget.aircraft.aircraftRoutes.first.transitionPoint != null && !widget.aircraft.isReachedTransitionPoint) {
-      target = widget.aircraft.aircraftRoutes.first.transitionPoint!.airportPosition.position;
+    if (widget.aircraft.aircraftRoutes.first.transitionPoint != null &&
+        !widget.aircraft.isReachedTransitionPoint) {
+      target = widget.aircraft.aircraftRoutes.first.transitionPoint!
+          .airportPosition.position;
     }
+
+    if (widget.aircraft.aircraftRoutes.first.startPoint !=
+        widget.aircraft.baseAircraftPosition) {
+      target = widget
+          .aircraft.aircraftRoutes.first.startPoint.airportPosition.position;
+    }
+
     return target;
   }
 
@@ -70,14 +86,13 @@ class _AircraftWidgetState extends State<AircraftWidget> {
               aircraft == widget.aircraft &&
               aircraft.aircraftRoutes.first.endPoint.airportPosition.position ==
                   currentPosition)) {
-
         print('${widget.aircraft.name} Finished');
         //TODO implement correctly
         //Here should be nullifying of the aircraft
-        AircraftRoute? nextRoute = AlgorithmUtil().getNextRoute(widget.aircraft);
-        if(nextRoute != null) {
-          widget.aircraft.aircraftRoutes.add(nextRoute);
-        }
+        // AircraftRoute? nextRoute = AlgorithmUtil().getNextRoute(widget.aircraft);
+        // if(nextRoute != null) {
+        //   widget.aircraft.aircraftRoutes.add(nextRoute);
+        // }
         //isListening = false;
       }
     });
