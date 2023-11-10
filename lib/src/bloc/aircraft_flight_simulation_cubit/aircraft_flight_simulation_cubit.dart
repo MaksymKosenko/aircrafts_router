@@ -22,7 +22,7 @@ class AircraftFlightSimulationCubit
   Timer? simulationTimer;
 
   void startSimulation() {
-    emit(state.copyWith(aircraftList: aircraftList));
+    emit(state.copyWith(aircraftList: aircraftList, isRunningSimulation: true));
     simulationTimer = Timer.periodic(_updateInterval, _updateAircraftPosition);
   }
 
@@ -93,10 +93,20 @@ class AircraftFlightSimulationCubit
 
   void stopSimulation() {
     simulationTimer?.cancel();
+    emit(
+        state.copyWith(aircraftList: aircraftList, isRunningSimulation: false));
+  }
+
+  void restartSimulation() {
+    simulationTimer?.cancel();
     state.aircraftList.forEach(_resetAircraftOffset);
-    state.aircraftList.forEach((aircraft) =>
-        _changeAircraftState(aircraft, AircraftFlightState.notStarted));
-    emit(state.copyWith(aircraftList: aircraftList));
+    state.aircraftList.forEach((aircraft) {
+      _changeAircraftState(aircraft, AircraftFlightState.notStarted);
+      aircraft.isReachedTransitionPoint = false;
+    });
+
+    emit(
+        state.copyWith(aircraftList: aircraftList, isRunningSimulation: false));
   }
 
   void _changeAircraftState(
