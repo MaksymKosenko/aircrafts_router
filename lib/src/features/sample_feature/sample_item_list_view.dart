@@ -137,7 +137,7 @@ class _SampleItemListViewState extends State<SampleItemListView> {
   List<Aircraft> _getActiveAircrafts(List<Aircraft> aircrafts) {
     return aircrafts
         .where(
-            (aircraft) => aircraft.flightState != AircraftFlightState.completed)
+            (aircraft) => aircraft.aircraftRoutes.isNotEmpty)
         .toList();
   }
 }
