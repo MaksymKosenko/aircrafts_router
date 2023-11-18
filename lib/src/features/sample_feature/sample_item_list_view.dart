@@ -29,6 +29,8 @@ class _SampleItemListViewState extends State<SampleItemListView> {
   Airport? selectedAirport;
   Aircraft? selectedAircraft;
 
+  bool isActiveAlgorithmMode = false;
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +44,7 @@ class _SampleItemListViewState extends State<SampleItemListView> {
       appBar: AppBar(
         title: const Text('Sample Items'),
         actions: [
+          _buildAlgorithmSwitchButton(),
           _buildPlayButton(),
           _buildStopButton(),
           _buildRestartButton(),
@@ -84,6 +87,16 @@ class _SampleItemListViewState extends State<SampleItemListView> {
     );
   }
 
+  Widget _buildAlgorithmSwitchButton() {
+    return Switch(
+        value: isActiveAlgorithmMode,
+        onChanged: (isTapped) {
+          setState(() {
+            isActiveAlgorithmMode = isTapped;
+          });
+        });
+  }
+
   Widget _buildPlayButton() {
     return BlocBuilder<AircraftFlightSimulationCubit,
         AircraftFlightSimulationState>(
@@ -93,7 +106,9 @@ class _SampleItemListViewState extends State<SampleItemListView> {
         }
         return IconButton(
           onPressed: () {
-            flightSimulationCubit.startSimulation();
+            isActiveAlgorithmMode
+                ? flightSimulationCubit.startSimulation()
+                : flightSimulationCubit.startSimulation();
           },
           icon: const Icon(Icons.play_arrow),
         );
