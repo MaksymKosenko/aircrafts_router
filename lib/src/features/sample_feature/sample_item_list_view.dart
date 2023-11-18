@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:aircrafts_router/src/bloc/algorithm_cubit/algorithm_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:aircrafts_router/src/ui/widgets/selected_item_widget.dart';
@@ -48,18 +50,33 @@ class _SampleItemListViewState extends State<SampleItemListView> {
       ),
       body: Padding(
         padding: AppDimensions.horizontalPadding24,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Stack(
           children: [
-            BlocBuilder<AircraftFlightSimulationCubit,
-                AircraftFlightSimulationState>(
-              builder: (context, state) {
-                return _buildAircraftsAndAirports(state.aircraftList);
-              },
+            Container(
+              height: AppDimensions.size(context).height,
+              width: 1150,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/ukraine_road_map.jpg'),
+                  opacity: 0.3,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            SizedBox(
-              width: AppDimensions.size(context).width * 0.3,
-              child: const SelectedItemWidget(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                BlocBuilder<AircraftFlightSimulationCubit,
+                    AircraftFlightSimulationState>(
+                  builder: (context, state) {
+                    return _buildAircraftsAndAirports(state.aircraftList);
+                  },
+                ),
+                SizedBox(
+                  width: AppDimensions.size(context).width * 0.15,
+                  child: const SelectedItemWidget(),
+                ),
+              ],
             ),
           ],
         ),
@@ -103,11 +120,28 @@ class _SampleItemListViewState extends State<SampleItemListView> {
   }
 
   Widget _buildRestartButton() {
-    return IconButton(
-      onPressed: () {
-        flightSimulationCubit.restartSimulation();
+    return BlocBuilder<AircraftFlightSimulationCubit,
+        AircraftFlightSimulationState>(
+      builder: (context, state) {
+        return IconButton(
+          onPressed: () {
+            if (state.aircraftList
+                .every((element) => element.aircraftRoutes.isEmpty)) {
+              final algorithmCubit = context.read<AlgorithmCubit>();
+              final coreDataCubit = context.read<CoreDataCubit>();
+
+              algorithmCubit.generateStartRoutes(
+                airports: algorithmCubit.state.airports,
+                transportationResources:
+                    coreDataCubit.state.transportationResources,
+                aircrafts: flightSimulationCubit.initialAircrafts,
+              );
+            }
+            flightSimulationCubit.restartSimulation();
+          },
+          icon: const Icon(Icons.restore_rounded),
+        );
       },
-      icon: const Icon(Icons.restore_rounded),
     );
   }
 
@@ -122,7 +156,7 @@ class _SampleItemListViewState extends State<SampleItemListView> {
 
   Widget _buildAircraftsAndAirports(List<Aircraft> aircrafts) {
     return SizedBox(
-      width: AppDimensions.size(context).width * 0.5,
+      width: AppDimensions.size(context).width * 0.7,
       child: Stack(
         children: [
           for (Airport airport in coreDataCubit.state.airports)
@@ -136,8 +170,7 @@ class _SampleItemListViewState extends State<SampleItemListView> {
 
   List<Aircraft> _getActiveAircrafts(List<Aircraft> aircrafts) {
     return aircrafts
-        .where(
-            (aircraft) => aircraft.aircraftRoutes.isNotEmpty)
+        .where((aircraft) => aircraft.aircraftRoutes.isNotEmpty)
         .toList();
   }
 }
