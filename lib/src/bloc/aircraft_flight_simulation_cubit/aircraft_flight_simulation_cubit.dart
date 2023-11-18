@@ -28,6 +28,7 @@ class AircraftFlightSimulationCubit extends Cubit<AircraftFlightSimulationState>
   void startSimulation() {
     if (simulationTimer == null || !simulationTimer!.isActive) {
       completedAircraftCount = 0;
+      emit(state.copyWith(isRunningSimulation: true));
       simulationTimer = Timer.periodic(_updateInterval, _updateAircraftPosition);
     }
   }
