@@ -9,38 +9,52 @@ import 'package:aircrafts_router/src/algorithm_util/models/aircraft.dart';
 
 part 'aircraft_flight_simulation_state.dart';
 
-class AircraftFlightSimulationCubit
-    extends Cubit<AircraftFlightSimulationState> {
+class AircraftFlightSimulationCubit extends Cubit<AircraftFlightSimulationState> {
   static const _updateInterval = Duration(milliseconds: 50);
   static const _defaultAircraftSpeed = 100;
 
-  AircraftFlightSimulationCubit(this.aircraftList)
-      : super(AircraftFlightSimulationState(aircraftList: aircraftList));
-
   final List<Aircraft> aircraftList;
+  final List<Aircraft> _initialAircrafts;
 
   Timer? simulationTimer;
+  int completedAircraftCount = 0;
+
+  AircraftFlightSimulationCubit(this.aircraftList)
+      : _initialAircrafts = aircraftList.map((e) => e.clone()).toList(),
+        super(AircraftFlightSimulationState(aircraftList: aircraftList));
+
+  List<Aircraft> get initialAircrafts => _initialAircrafts;
 
   void startSimulation() {
-    emit(state.copyWith(aircraftList: aircraftList, isRunningSimulation: true));
-    simulationTimer = Timer.periodic(_updateInterval, _updateAircraftPosition);
+    if (simulationTimer == null || !simulationTimer!.isActive) {
+      completedAircraftCount = 0;
+      simulationTimer = Timer.periodic(_updateInterval, _updateAircraftPosition);
+    }
   }
 
   void _updateAircraftPosition(Timer timer) {
-    final updatedAircraftList =
-        state.aircraftList.map(_updateAircraft).toList();
+    final updatedAircraftList = state.aircraftList.map(_updateAircraft).toList();
     emit(state.copyWith(aircraftList: updatedAircraftList));
+
+    if (completedAircraftCount == aircraftList.length) {
+      stopSimulation();
+    }
   }
 
   Aircraft _updateAircraft(Aircraft aircraft) {
-    final route = aircraft.aircraftRoutes.first;
+    if (aircraft.aircraftRoutes.isEmpty || !simulationTimer!.isActive) {
+      return aircraft;
+    }
 
+    final route = aircraft.aircraftRoutes.first;
     Offset? transitionPoint = route.transitionPoint?.airportPosition.position;
     Offset startPoint = route.startPoint.airportPosition.position;
+
     if (aircraft.baseAircraftPosition.airportPosition.position != startPoint) {
       transitionPoint = startPoint;
       startPoint = aircraft.baseAircraftPosition.airportPosition.position;
     }
+
     Offset endPoint = route.endPoint.airportPosition.position;
 
     if (aircraft.isReachedTransitionPoint && transitionPoint != null) {
@@ -76,7 +90,6 @@ class AircraftFlightSimulationCubit
       aircraft.baseAircraftPosition = route.startPoint;
     } else {
       _changeAircraftState(aircraft, AircraftFlightState.completed);
-      //TODO implement later
       aircraft.baseAircraftPosition = aircraft.aircraftRoutes.first.endPoint;
       aircraft.aircraftRoutes = [];
       AircraftRoute? nextRoute = AlgorithmUtil().getNextRoute(aircraft);
@@ -85,6 +98,8 @@ class AircraftFlightSimulationCubit
       if (nextRoute != null) {
         aircraft.aircraftRoutes.add(nextRoute);
         AlgorithmUtil().removeFromList(nextRoute);
+      } else {
+        completedAircraftCount++;
       }
     }
 
@@ -93,24 +108,30 @@ class AircraftFlightSimulationCubit
 
   void stopSimulation() {
     simulationTimer?.cancel();
-    emit(
-        state.copyWith(aircraftList: aircraftList, isRunningSimulation: false));
+    emit(state.copyWith(aircraftList: aircraftList, isRunningSimulation: false));
   }
 
   void restartSimulation() {
     simulationTimer?.cancel();
+
+    if (completedAircraftCount == aircraftList.length) {
+      completedAircraftCount = 0;
+      return emit(
+        state.copyWith(
+            aircraftList: _initialAircrafts.map((e) => e.clone()).toList()),
+      );
+    }
+
     state.aircraftList.forEach(_resetAircraftOffset);
     state.aircraftList.forEach((aircraft) {
       _changeAircraftState(aircraft, AircraftFlightState.notStarted);
       aircraft.isReachedTransitionPoint = false;
     });
 
-    emit(
-        state.copyWith(aircraftList: aircraftList, isRunningSimulation: false));
+    emit(state.copyWith(aircraftList: aircraftList, isRunningSimulation: false));
   }
 
-  void _changeAircraftState(
-      Aircraft aircraft, AircraftFlightState updatedState) {
+  void _changeAircraftState(Aircraft aircraft, AircraftFlightState updatedState) {
     aircraft.flightState = updatedState;
   }
 
@@ -119,7 +140,7 @@ class AircraftFlightSimulationCubit
   }
 
   Aircraft getNullifiedAircraft(Aircraft aircraft) {
-    Aircraft _aircraft = Aircraft(
+    return Aircraft(
       name: aircraft.name,
       baseAircraftPosition: aircraft.baseAircraftPosition,
       aircraftRoutes: [],
@@ -128,15 +149,13 @@ class AircraftFlightSimulationCubit
       transportSpaceAmount: aircraft.transportSpaceAmount,
       aircraftCost: aircraft.aircraftCost,
       transportationResourceCost: aircraft.transportationResourceCost,
-    );
-    return _aircraft
+    )
       ..isReachedTransitionPoint = false
       ..flightState = AircraftFlightState.notStarted
       ..currentPosition = 0;
   }
 
-  Offset getDisplayAircraftPosition(
-      Aircraft aircraft, Offset start, Offset target) {
+  Offset getDisplayAircraftPosition(Aircraft aircraft, Offset start, Offset target) {
     final startPoint = start;
     final endPoint = target;
     final currentPositionPercentage = aircraft.currentPosition;
