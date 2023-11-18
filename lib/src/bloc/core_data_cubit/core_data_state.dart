@@ -4,22 +4,22 @@ class CoreDataState {
   CoreDataState({
     required this.airports,
     required this.aircrafts,
-    required this.aircraftRoutes,
+    required this.transportationResources,
   });
 
   List<Airport> airports;
   List<Aircraft> aircrafts;
-  List<AircraftRoute> aircraftRoutes;
+  List<TransportationResource> transportationResources;
 
   CoreDataState copyWith({
     List<Airport>? airports,
     List<Aircraft>? aircrafts,
-    List<AircraftRoute>? aircraftRoutes,
+    List<TransportationResource>? transportationResources,
   }) {
     return CoreDataState(
       airports: airports ?? this.airports,
       aircrafts: aircrafts ?? this.aircrafts,
-      aircraftRoutes: aircraftRoutes ?? this.aircraftRoutes,
+      transportationResources: transportationResources ?? this.transportationResources,
     );
   }
 }
