@@ -93,7 +93,6 @@ class _SampleItemListViewState extends State<SampleItemListView> {
         }
         return IconButton(
           onPressed: () {
-            if (state.isRunningSimulation) return;
             flightSimulationCubit.startSimulation();
           },
           icon: const Icon(Icons.play_arrow),
