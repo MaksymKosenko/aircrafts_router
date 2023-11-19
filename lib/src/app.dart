@@ -191,7 +191,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isActiveAlgorithmMode = true;
+    bool isActiveAlgorithmMode = false;
     final algorithmCubit = AlgorithmCubit(
       airports: airports,
       transportationResources: transportationResources,
