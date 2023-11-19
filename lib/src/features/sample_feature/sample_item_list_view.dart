@@ -46,38 +46,35 @@ class _SampleItemListViewState extends State<SampleItemListView> {
           _buildSettingsButton(),
         ],
       ),
-      body: Padding(
-        padding: AppDimensions.horizontalPadding24,
-        child: Stack(
-          children: [
-            Container(
-              height: AppDimensions.size(context).height,
-              width: 1150,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/ukraine_road_map.jpg'),
-                  opacity: 0.3,
-                  fit: BoxFit.cover,
-                ),
+      body: Stack(
+        children: [
+          Container(
+            height: AppDimensions.size(context).height,
+            width: 1150,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/ukraine_road_map.jpg'),
+                opacity: 0.8,
+                fit: BoxFit.cover,
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                BlocBuilder<AircraftFlightSimulationCubit,
-                    AircraftFlightSimulationState>(
-                  builder: (context, state) {
-                    return _buildAircraftsAndAirports(state.aircraftList);
-                  },
-                ),
-                SizedBox(
-                  width: AppDimensions.size(context).width * 0.15,
-                  child: const SelectedItemWidget(),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              BlocBuilder<AircraftFlightSimulationCubit,
+                  AircraftFlightSimulationState>(
+                builder: (context, state) {
+                  return _buildAircraftsAndAirports(state.aircraftList);
+                },
+              ),
+              SizedBox(
+                width: AppDimensions.size(context).width * 0.15,
+                child: const SelectedItemWidget(),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -23,11 +23,12 @@ class _AirportWidgetState extends State<AirportWidget> {
         onTap: () =>
             context.read<SelectedItemCubit>().selectAirport(widget.airport),
         child: Container(
-          height: 64,
-          width: 64,
+          height: 40,
+          width: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(),
+            color: Colors.white
           ),
           child: Center(
             child: Text(widget.airport.name),

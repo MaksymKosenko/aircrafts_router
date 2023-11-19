@@ -31,19 +31,19 @@ class MyApp extends StatelessWidget {
     ),
     Airport(
       name: "B",
-      airportPosition: const AirportPosition(15, 2),
+      airportPosition: const AirportPosition(16, 7),
       fuelAmount: 40,
       totalAircraftAmount: 3,
     ),
     Airport(
       name: "C",
-      airportPosition: const AirportPosition(10, 2),
+      airportPosition: const AirportPosition(10, 3),
       fuelAmount: 40,
       totalAircraftAmount: 3,
     ),
     Airport(
       name: "D",
-      airportPosition: const AirportPosition(6, 5),
+      airportPosition: const AirportPosition(3, 5),
       fuelAmount: 40,
       totalAircraftAmount: 3,
     ),

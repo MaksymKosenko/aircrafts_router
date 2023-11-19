@@ -81,6 +81,8 @@ class _AircraftWidgetState extends State<AircraftWidget> {
       left: currentPosition.dx,
       top: currentPosition.dy,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(widget.aircraft.name),
           Transform.rotate(
@@ -91,6 +93,8 @@ class _AircraftWidgetState extends State<AircraftWidget> {
                   .selectAircraft(widget.aircraft),
               icon: const Icon(
                 Icons.airplanemode_active,
+                color: Colors.yellow,
+                shadows: [Shadow(blurRadius: 2)],
               ),
             ),
           ),

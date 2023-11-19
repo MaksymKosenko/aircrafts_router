@@ -32,7 +32,7 @@ class AirportPosition {
   final int _y;
 
   const AirportPosition(int x, int y)
-      : assert(x >= 0 && x <= 20),
+      : assert(x >= 0 && x <= 30),
         assert(y >= 0 && y <= 12),
         _x = x,
         _y = y;
