@@ -3,7 +3,7 @@ import 'package:aircrafts_router/src/algorithm_util/models/airport.dart';
 import 'models/aircraft.dart';
 import 'models/aircraft_route.dart';
 import 'models/transportation_resource.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:collection/collection.dart';
 
 class AlgorithmUtil {
   AlgorithmUtil._privateConstructor();
@@ -44,6 +44,9 @@ class AlgorithmUtil {
   ) {
     _airports.addAll(airports);
     _notSortedRoutes.addAll(transportationResources);
+
+    _generatedRoutes.addAll(_notSortedRoutes.map(
+        (resource) => getAircraftRouteFromTransportationResource(resource)));
 
     planes.forEach((plane) {
       AircraftRoute? nextRoute = getNextRouteSimplified(plane);
@@ -114,6 +117,12 @@ class AlgorithmUtil {
   }
 
   void removeFromList(AircraftRoute route) {
+    if (_notSortedRoutes.isNotEmpty) {
+      _notSortedRoutes.remove(
+          getTransportationResourceFromAircraftRoute(route, _notSortedRoutes));
+      return;
+    }
+
     if (route.routePriority == Priority.critical) {
       _criticalPriorityRoutes.remove(getTransportationResourceFromAircraftRoute(
           route, _criticalPriorityRoutes));
@@ -160,9 +169,15 @@ class AlgorithmUtil {
   }
 
   AircraftRoute? getNextRouteSimplified(Aircraft plane) {
+    final firstSimplifiedTransportation = getFirstSimplifiedTransportation(
+        plane.transportSpaceAmount, _notSortedRoutes);
+
+    if (firstSimplifiedTransportation == null) {
+      return null;
+    }
+
     final nextRoute = getAircraftRouteFromTransportationResource(
-        getFirstSimplifiedTransportation(
-            plane.transportSpaceAmount, _notSortedRoutes));
+        firstSimplifiedTransportation);
     return nextRoute;
   }
 
@@ -218,9 +233,9 @@ class AlgorithmUtil {
           orElse: () => prioritizedList.firstWhere((element) =>
               didPlaneCanPickup(planeSpaceAmount, element.amount)));
 
-  TransportationResource getFirstSimplifiedTransportation(
+  TransportationResource? getFirstSimplifiedTransportation(
           int planeSpaceAmount, List<TransportationResource> prioritizedList) =>
-      prioritizedList.firstWhere(
+      prioritizedList.firstWhereOrNull(
         (element) => didPlaneCanPickup(planeSpaceAmount, element.amount),
       );
 
