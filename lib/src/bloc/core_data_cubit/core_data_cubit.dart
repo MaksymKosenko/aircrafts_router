@@ -11,9 +11,11 @@ class CoreDataCubit extends Cubit<CoreDataState> {
     required List<Airport> airports,
     required List<Aircraft> aircrafts,
     required List<TransportationResource> transportationRecourses,
+    required bool isActiveAlgorithmMode,
   }) : super(CoreDataState(
           airports: airports,
           aircrafts: aircrafts,
           transportationResources: transportationRecourses,
+          isActiveAlgorithmMode: isActiveAlgorithmMode,
         ));
 }

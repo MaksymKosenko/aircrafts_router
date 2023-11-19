@@ -191,10 +191,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isActiveAlgorithmMode = true;
     final algorithmCubit = AlgorithmCubit(
       airports: airports,
       transportationResources: transportationResources,
       aircrafts: aircrafts,
+      isActiveAlgorithmMode: isActiveAlgorithmMode,
     );
     return AnimatedBuilder(
       animation: settingsController,
@@ -212,6 +214,7 @@ class MyApp extends StatelessWidget {
                 airports: airports,
                 transportationRecourses: transportationResources,
                 aircrafts: algorithmCubit.state.aircrafts,
+                isActiveAlgorithmMode: isActiveAlgorithmMode,
               ),
             ),
             BlocProvider(

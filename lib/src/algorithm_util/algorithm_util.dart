@@ -35,6 +35,29 @@ class AlgorithmUtil {
 
   final List<TransportationResource> _lowPriorityRoutes = [];
 
+  final List<TransportationResource> _notSortedRoutes = [];
+
+  void generateStartRoutesWithoutAlgorithm(
+    List<Airport> airports,
+    List<TransportationResource> transportationResources,
+    List<Aircraft> planes,
+  ) {
+    _airports.addAll(airports);
+    _notSortedRoutes.addAll(transportationResources);
+
+    planes.forEach((plane) {
+      AircraftRoute? nextRoute = getNextRouteSimplified(plane);
+      if (nextRoute != null) {
+        _generatedRoutes.add(getAdditionalTransitionIfNeeded(plane, nextRoute));
+        _notSortedRoutes.remove(getTransportationResourceFromAircraftRoute(
+            nextRoute, _notSortedRoutes));
+        plane.aircraftRoutes
+            .add(getAdditionalTransitionIfNeeded(plane, nextRoute));
+        _aircrafts.add(plane);
+      }
+    });
+  }
+
   void generateStartRoutes(
     List<Airport> airports,
     List<TransportationResource> transportationResources,
@@ -136,6 +159,13 @@ class AlgorithmUtil {
     return planeSpaceAmount >= resourceAmount ? true : false;
   }
 
+  AircraftRoute? getNextRouteSimplified(Aircraft plane) {
+    final nextRoute = getAircraftRouteFromTransportationResource(
+        getFirstSimplifiedTransportation(
+            plane.transportSpaceAmount, _notSortedRoutes));
+    return nextRoute;
+  }
+
   AircraftRoute? getNextRoute(Aircraft plane) {
     AirportPosition routeStartPosition =
         plane.baseAircraftPosition.airportPosition;
@@ -187,6 +217,12 @@ class AlgorithmUtil {
               didPlaneCanPickup(planeSpaceAmount, element.amount),
           orElse: () => prioritizedList.firstWhere((element) =>
               didPlaneCanPickup(planeSpaceAmount, element.amount)));
+
+  TransportationResource getFirstSimplifiedTransportation(
+          int planeSpaceAmount, List<TransportationResource> prioritizedList) =>
+      prioritizedList.firstWhere(
+        (element) => didPlaneCanPickup(planeSpaceAmount, element.amount),
+      );
 
   AircraftRoute getAircraftRouteFromTransportationResource(
       TransportationResource transportation) {

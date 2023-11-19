@@ -26,11 +26,6 @@ class _SampleItemListViewState extends State<SampleItemListView> {
   late final CoreDataCubit coreDataCubit;
   late final AircraftFlightSimulationCubit flightSimulationCubit;
 
-  Airport? selectedAirport;
-  Aircraft? selectedAircraft;
-
-  bool isActiveAlgorithmMode = false;
-
   @override
   void initState() {
     super.initState();
@@ -89,10 +84,10 @@ class _SampleItemListViewState extends State<SampleItemListView> {
 
   Widget _buildAlgorithmSwitchButton() {
     return Switch(
-        value: isActiveAlgorithmMode,
+        value: coreDataCubit.state.isActiveAlgorithmMode,
         onChanged: (isTapped) {
           setState(() {
-            isActiveAlgorithmMode = isTapped;
+            coreDataCubit.state.isActiveAlgorithmMode = isTapped;
           });
         });
   }
@@ -106,9 +101,8 @@ class _SampleItemListViewState extends State<SampleItemListView> {
         }
         return IconButton(
           onPressed: () {
-            isActiveAlgorithmMode
-                ? flightSimulationCubit.startSimulation()
-                : flightSimulationCubit.startSimulation();
+            flightSimulationCubit
+                .startSimulation(coreDataCubit.state.isActiveAlgorithmMode);
           },
           icon: const Icon(Icons.play_arrow),
         );
@@ -144,12 +138,19 @@ class _SampleItemListViewState extends State<SampleItemListView> {
               final algorithmCubit = context.read<AlgorithmCubit>();
               final coreDataCubit = context.read<CoreDataCubit>();
 
-              algorithmCubit.generateStartRoutes(
-                airports: algorithmCubit.state.airports,
-                transportationResources:
-                    coreDataCubit.state.transportationResources,
-                aircrafts: flightSimulationCubit.initialAircrafts,
-              );
+              coreDataCubit.state.isActiveAlgorithmMode
+                  ? algorithmCubit.generateStartRoutes(
+                      airports: algorithmCubit.state.airports,
+                      transportationResources:
+                          coreDataCubit.state.transportationResources,
+                      aircrafts: flightSimulationCubit.initialAircrafts,
+                    )
+                  : algorithmCubit.generateStartRoutesWithoutAlgorithm(
+                      airports: algorithmCubit.state.airports,
+                      transportationResources:
+                          coreDataCubit.state.transportationResources,
+                      aircrafts: flightSimulationCubit.initialAircrafts,
+                    );
             }
             flightSimulationCubit.restartSimulation();
           },

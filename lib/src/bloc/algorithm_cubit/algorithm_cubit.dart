@@ -12,12 +12,18 @@ class AlgorithmCubit extends Cubit<AlgorithmState> {
     required List<Airport> airports,
     required List<TransportationResource> transportationResources,
     required List<Aircraft> aircrafts,
+    required bool isActiveAlgorithmMode,
   }) : super(AlgorithmState()) {
-    generateStartRoutes(
-      airports: airports,
-      transportationResources: transportationResources,
-      aircrafts: aircrafts,
-    );
+    isActiveAlgorithmMode
+        ? generateStartRoutes(
+            airports: airports,
+            transportationResources: transportationResources,
+            aircrafts: aircrafts,
+          )
+        : generateStartRoutesWithoutAlgorithm(
+            airports: airports,
+            transportationResources: transportationResources,
+            aircrafts: aircrafts);
   }
 
   final AlgorithmUtil algorithmUtil = AlgorithmUtil();
@@ -28,6 +34,20 @@ class AlgorithmCubit extends Cubit<AlgorithmState> {
     required List<Aircraft> aircrafts,
   }) {
     algorithmUtil.generateStartRoutes(
+      airports,
+      transportationResources,
+      aircrafts,
+    );
+
+    emit(state.copyWith(airports: airports, aircrafts: aircrafts));
+  }
+
+  void generateStartRoutesWithoutAlgorithm({
+    required List<Airport> airports,
+    required List<TransportationResource> transportationResources,
+    required List<Aircraft> aircrafts,
+  }) {
+    algorithmUtil.generateStartRoutesWithoutAlgorithm(
       airports,
       transportationResources,
       aircrafts,

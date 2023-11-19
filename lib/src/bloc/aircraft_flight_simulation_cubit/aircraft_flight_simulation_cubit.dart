@@ -19,14 +19,17 @@ class AircraftFlightSimulationCubit extends Cubit<AircraftFlightSimulationState>
   Timer? simulationTimer;
   int completedAircraftCount = 0;
 
+  late bool isActiveAlgorithm;
+
   AircraftFlightSimulationCubit(this.aircraftList)
       : _initialAircrafts = aircraftList.map((e) => e.clone()).toList(),
         super(AircraftFlightSimulationState(aircraftList: aircraftList));
 
   List<Aircraft> get initialAircrafts => _initialAircrafts;
 
-  void startSimulation() {
+  void startSimulation(bool isActiveAlgorithmMode) {
     if (simulationTimer == null || !simulationTimer!.isActive) {
+      isActiveAlgorithm = isActiveAlgorithmMode;
       completedAircraftCount = 0;
       emit(state.copyWith(isRunningSimulation: true));
       simulationTimer = Timer.periodic(_updateInterval, _updateAircraftPosition);
@@ -93,7 +96,10 @@ class AircraftFlightSimulationCubit extends Cubit<AircraftFlightSimulationState>
       _changeAircraftState(aircraft, AircraftFlightState.completed);
       aircraft.baseAircraftPosition = aircraft.aircraftRoutes.first.endPoint;
       aircraft.aircraftRoutes = [];
-      AircraftRoute? nextRoute = AlgorithmUtil().getNextRoute(aircraft);
+      AircraftRoute? nextRoute =
+      isActiveAlgorithm
+          ? AlgorithmUtil().getNextRoute(aircraft)
+          : AlgorithmUtil().getNextRouteSimplified(aircraft);
       aircraft = getNullifiedAircraft(aircraft);
 
       if (nextRoute != null) {
